@@ -14,3 +14,7 @@
 
 # Simulink Code Generation        
 slprj/
+
+# scripts and data
+data/
+script/
