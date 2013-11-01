@@ -1,0 +1,41 @@
+function toolbox_init()
+% TOOLBOX_INIT Initialize the toolbox
+%  
+%   Initialize the toolbox by setting up several global variables. 
+% 
+% Syntax:   toolbox_init()
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+
+%% AUTHOR    : Yimeng Zhang
+%% Computer Science Department, Carnegie Mellon University
+%% EMAIL     : zym1010@gmail.com 
+
+%% $DATE     : 31-Oct-2013 20:51:52 $ 
+%% $Revision : 1.00 $ 
+%% DEVELOPED : 8.1.0.604 (R2013a) 
+%% FILENAME  : toolbox_init.m 
+
+global TB_CONFIG % toolbox config
+
+% specifiying path
+TB_CONFIG.PATH.stimuli = '/Users/yimengzh/Documents/Research/2013 Corentin Data Analysis/CTXFiles_edge_concept/edge_or/pngs_or33/';
+TB_CONFIG.PATH.sorted_data = '/Users/yimengzh/Documents/Research/2013 Corentin Data Analysis/Yuke/sorted data/';
+TB_CONFIG.PATH.save_cdt = '/Users/yimengzh/Documents/Research/2013 Corentin Data Analysis/yimeng_analysis_toolbox/data/';
+
+
+% specifying parameters when converting recording to CDT
+TB_CONFIG.CDT.no_secondary_unit = false; % no unit 2-254
+TB_CONFIG.CDT.no_255_unit = true; % no unit 255
+TB_CONFIG.CDT.no_0_unit = true; % no unit 0 
+TB_CONFIG.CDT.margin_before = 0.3; % margin before the starting align code
+TB_CONFIG.CDT.margin_after = 0.3; % margin after the ending the align code
+
+
+
+% Created with NEWFCN.m by Frank González-Morphy 
+% Contact...: frank.gonzalez-morphy@mathworks.de  
+% ===== EOF ====== [toolbox_init.m] ======  
