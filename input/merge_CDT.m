@@ -30,7 +30,7 @@ for i = 2:length(cdt_list)
     assert(isequal(size_event_next(1:2),size_event_first(1:2)));
     
     assert(isequal(cdt_next.info.exp_name,cdt_first.info.exp_name));
-    assert(isequal(cdt_next.info.rf,cdt_first.info.rf));
+    %assert(isequal(cdt_next.info.rf,cdt_first.info.rf));
     assert(isequal(cdt_next.info.monkey,cdt_first.info.monkey));
      
     assert(isequal(cdt_next.data.margins,cdt_first.data.margins));
