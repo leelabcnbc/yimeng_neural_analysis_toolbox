@@ -34,7 +34,7 @@ function [exp_info_map] = import_exp_parameter(raw_record)
 
 
 fid = fopen(raw_record);
-mat_record = textscan(fid, '%q %q %q %q %q', 'Delimiter', ',');
+mat_record = textscan(fid, '%q %q %q %q %q %q %q', 'Delimiter', ',');
 
 fclose(fid);
 
@@ -58,17 +58,6 @@ for i = 1:length(header)
     header{i} = mat_record{i}{1}; 
 end
 
-
-
-for i = 1:length(exp_info_list)
-    for j = 1:length(mat_record)
-        if ~ismember(j, numerical_field)
-            exp_info_list{i}.(mat_record{j}{1}) = mat_record{j}{i+1}; 
-        else
-            exp_info_list{i}.(mat_record{j}{1}) = str2num(mat_record{j}{i+1});
-        end
-    end
-end
 
 exp_info_map = containers.Map;
 

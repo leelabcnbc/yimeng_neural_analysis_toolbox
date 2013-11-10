@@ -64,15 +64,23 @@ for i = 1:length(NEV_info_list)
     %%%%%%%%%%%%%%%%%%%%%%%%
     NEV_name = NEV_info_list{i}.NEV_path;
     exp_name = NEV_info_list{i}.exp_name;
+    CORTEX_name = NEV_info_list{i}.CORTEX_path;
+    
     %%%%%%%%%%%%%%%%%%%%%%%%
     
+    
     NEV_struct = openNEV(NEV_name,'nosave','nomat');
+    
+    
+    exp_param = TB_CONFIG.exp_parameter_map(exp_name);
+    exp_param.cndlist = exp_param.condition_start:exp_param.condition_end;
+    exp_param.nstimuli = length(exp_param.cndlist);
     
     if external_code
         NEV_code = NEV_code_list{i}; % this is  N*1 cell array, where N is number of trials.
         NEV_time = NEV_time_list{i};
     else
-        [NEV_code, NEV_time]=fix_NEV_file(NEV_name, false);
+        [NEV_code, NEV_time]=fix_NEV_CTX(NEV_name, true, exp_param.timing_file, exp_param.condition_file, CORTEX_name, TB_CONFIG.CDT.throw_high_byte);
     end
     
     % NEV_code and NEV_time are error-free code list and time list for only
@@ -85,12 +93,6 @@ for i = 1:length(NEV_info_list)
     data.margins={before after};
     %%%%%%%%%%%%%%%%%%%%%%%
 
-    
-    exp_param = TB_CONFIG.exp_parameter_map(exp_name);
-    exp_param.cndlist = exp_param.condition_start:exp_param.condition_end;
-    exp_param.nstimuli = length(exp_param.cndlist);
-    
-    
     % for compatibility
     cdt.CHANNELS = unique(NEV_struct.Data.Spikes.Electrode); %list of channels %for compatibility
     
@@ -207,7 +209,7 @@ for i = 1:length(NEV_info_list)
     end
     
     cdt.data=data;
-    CDT_file_list{i} = [TB_CONFIG.PATH.save_cdt NEV_info_list{i}.key 'zym.mat'];
+    CDT_file_list{i} = [TB_CONFIG.PATH.save_cdt NEV_info_list{i}.key '.mat'];
     
     save(CDT_file_list{i},'cdt','CONFIG');
     
