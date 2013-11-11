@@ -1,5 +1,5 @@
-function [NEV_info_list] = import_recording(raw_record)
-% IMPORT_RECORDING ... 
+function [recording_info_list] = import_recording(raw_record)
+% IMPORT_RECORDING import recording database file into MATLAB
 %  
 %   ... 
 % 
@@ -31,52 +31,41 @@ function [NEV_info_list] = import_recording(raw_record)
 %% EMAIL     : zym1010@gmail.com 
 
 %% $DATE     : 31-Oct-2013 21:22:56 $ 
-%% $Revision : 1.00 $ 
+%% $Revision : 1.10 $ 
 %% DEVELOPED : 8.1.0.604 (R2013a) 
 %% FILENAME  : import_recording.m 
 
 %% MODIFICATIONS:
-%% $26-Sep-2002 14:44:35 $
-%% blablabla
+%% $10-Nov-2013 18:05:04 $
+%% change the format of the recording
 %% ---
-%% $25-Feb-2002 07:29:17 $ 
-%% blablabla
 
 global TB_CONFIG;
 
 fid = fopen(raw_record);
-mat_record = textscan(fid, '%q %q %q %q %q %q %q %q %q', 'Delimiter', ',');
+mat_record = textscan(fid, '%q %q %q %q %q', 'Delimiter', ',');
 fclose(fid);
 
-NEV_info_list = cell(length(mat_record{1})-1,1);
+recording_info_list = cell(length(mat_record{1})-1,1);
 
 
-for i = 1:length(NEV_info_list)
+for i = 1:length(recording_info_list)
     for j = 1:length(mat_record)
-        NEV_info_list{i}.(mat_record{j}{1}) = mat_record{j}{i+1}; 
-        
-        if strcmp(mat_record{j}{1},'channel') || strcmp(mat_record{j}{1},'ntrials')
-            NEV_info_list{i}.(mat_record{j}{1}) = str2num(mat_record{j}{i+1}); 
-        end
-        
-        
-        
+        recording_info_list{i}.(mat_record{j}{1}) = mat_record{j}{i+1};  
     end
     
     % add path name into filename, by creating a new field NEV_path
-    NEV_info_list{i}.NEV_path=[TB_CONFIG.PATH.sorted_data NEV_info_list{i}.NEV_name];
+    recording_info_list{i}.NEV_path=[TB_CONFIG.PATH.NEV_directory recording_info_list{i}.NEV_name];
     
-    if isempty(NEV_info_list{i}.key)
-        [~, name, ~] = fileparts(NEV_info_list{i}.NEV_path);
-        NEV_info_list{i}.key = name;
+    % do the same for CTX file
+    recording_info_list{i}.CTX_path=[TB_CONFIG.PATH.CTX_directory recording_info_list{i}.CTX_name];
+    
+    % auto fill the key
+    if isempty(recording_info_list{i}.key)
+        [~, name, ~] = fileparts(recording_info_list{i}.NEV_path);
+        recording_info_list{i}.key = name;
     end
     
-end
-
-header = cell(length(mat_record),1);
-
-for i = 1:length(header)
-    header{i} = mat_record{i}{1}; 
 end
 
 end

@@ -35,10 +35,11 @@ Both databases are written in CSV files.
 This file stores the **file-specific** information needed for importing every NEV file. I call it recording database file, not NEV database file, due to the possible extension of this toolbox to handle NS2 and other formats other than NEV.
 
 
-Each file's information occupies one line, and each line contains four fields.
+Each file's information occupies one line, and each line contains five fields.
 
 * **key** a unique identifier of this recording. If omitted, it's just **NEV_name** without extension.
-* **NEV_name** the name of NEV file for this recording.
+* **NEV_name** the name of the NEV file for this recording.
+* **CTX_name** the name of CORTEX file for this recording.
 * **exp_name** the name (key) of the associated experiment.
 * **comment** any other comment.
 
@@ -51,8 +52,7 @@ This file stores **experiment-specific** parameters for experiments that NEV fil
 * **exp_name** the name (key) of the associated experiment. Must match the one in the recording database file.
 * **condition_number** the condition numbers used in this experiment. The toolbox currently assumes that the condition numbers are consecutive, e.g. 1-16, 3-45, but not (1-12, 14-16). Here, only the smallest and the largest numbers are provided.
 * **number_of_test_per_condition** number of different tests done for one condition. In some experiments, one condition in CORTEX actually maps to 2 or more "real" conditions.
-* **align_code** the start and stop codes for all tests in one trial. Written in format **"start1 stop1 start2 end2 …"** There should be **2*number_of_test_per_condition** codes in this field.
-* **start_stop_code** two codes specifying the interval in which spikes and event codes are stored in the CDT structure. If omitted, the start code will be the first code in **align_code**, and the stop code will be the last code in **align_code**.
+* **align_code** the start and stop codes for all tests in one trial. Written in format **"start1 stop1 start2 end2 …"** There should be **2*number_of_test_per_condition** codes in this field. When converting NEV to CDT, only the spikes and events happening between **start1** and **stop{number_of_test_per_condition}** (plus margins) will be stored in CDT.
 * **timing_file** name of the associated timing file.
 * **condition_file** name of the associated condition file.
 

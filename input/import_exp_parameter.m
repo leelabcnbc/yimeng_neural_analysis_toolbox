@@ -28,23 +28,27 @@ function [exp_info_map] = import_exp_parameter(raw_record)
 %% EMAIL     : zym1010@gmail.com 
 
 %% $DATE     : 31-Oct-2013 21:18:08 $ 
-%% $Revision : 1.00 $ 
+%% $Revision : 1.10 $ 
 %% DEVELOPED : 8.1.0.604 (R2013a) 
 %% FILENAME  : import_exp_parameter.m 
 
+%% MODIFICATIONS:
+%% $10-Nov-2013 18:18:04 $
+%% change the format of the parameter file
+%% ---
 
 fid = fopen(raw_record);
-mat_record = textscan(fid, '%q %q %q %q %q %q %q', 'Delimiter', ',');
+mat_record = textscan(fid, '%q %q %q %q %q %q', 'Delimiter', ',');
 
 fclose(fid);
 
 exp_info_list = cell(length(mat_record{1})-1,1);
 
-numerical_field = [2 3 4 5];
+numerical_field = {'condition_number','number_of_test_per_condition','align_code'};
 
 for i = 1:length(exp_info_list)
     for j = 1:length(mat_record)
-        if ~ismember(j, numerical_field)
+        if ~ismember(mat_record{j}{1}, numerical_field)
             exp_info_list{i}.(mat_record{j}{1}) = mat_record{j}{i+1}; 
         else
             exp_info_list{i}.(mat_record{j}{1}) = str2num(mat_record{j}{i+1});
@@ -52,17 +56,12 @@ for i = 1:length(exp_info_list)
     end
 end
 
-header = cell(length(mat_record),1);
-
-for i = 1:length(header)
-    header{i} = mat_record{i}{1}; 
-end
 
 
 exp_info_map = containers.Map;
 
 for i = 1:length(exp_info_list)
-    exp_info_map(exp_info_list{i}.(header{1})) = exp_info_list{i};
+    exp_info_map(exp_info_list{i}.exp_name) = exp_info_list{i};
 end
 
 end

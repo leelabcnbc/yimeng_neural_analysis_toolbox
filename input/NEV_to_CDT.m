@@ -31,16 +31,14 @@ function CDT_file_list = NEV_to_CDT( NEV_info_list, NEV_code_list, NEV_time_list
 %% EMAIL     : zym1010@gmail.com
 
 %% $DATE     : 31-Oct-2013 21:39:18 $
-%% $Revision : 1.00 $
+%% $Revision : 1.10 $
 %% DEVELOPED : 8.1.0.604 (R2013a)
 %% FILENAME  : NEV_to_CDT.m
 
 %% MODIFICATIONS:
-%% $26-Sep-2002 14:44:35 $
-%% blablabla
+%% $10-Nov-2013 21:13:42 $
+%% rename fields, reorganize structure, add 'order', 'events', make 'condition_list' column vector, etc.
 %% ---
-%% $25-Feb-2002 07:29:17 $
-%% blablabla
 
 global TB_CONFIG
 
@@ -55,7 +53,7 @@ CDT_file_list = cell(length(NEV_info_list),1);
 for i = 1:length(NEV_info_list)
     
     % clear all
-    data = [];
+    time = [];
     cdt = [];
     
     fprintf('processing file %s...\n', NEV_info_list{i}.key);
@@ -64,7 +62,7 @@ for i = 1:length(NEV_info_list)
     %%%%%%%%%%%%%%%%%%%%%%%%
     NEV_name = NEV_info_list{i}.NEV_path;
     exp_name = NEV_info_list{i}.exp_name;
-    CORTEX_name = NEV_info_list{i}.CORTEX_path;
+    CTX_name = NEV_info_list{i}.CTX_path;
     
     %%%%%%%%%%%%%%%%%%%%%%%%
     
@@ -73,14 +71,13 @@ for i = 1:length(NEV_info_list)
     
     
     exp_param = TB_CONFIG.exp_parameter_map(exp_name);
-    exp_param.cndlist = exp_param.condition_start:exp_param.condition_end;
-    exp_param.nstimuli = length(exp_param.cndlist);
+    exp_param.condition_list = (exp_param.condition_number(1):exp_param.condition_number(2))';
     
     if external_code
         NEV_code = NEV_code_list{i}; % this is  N*1 cell array, where N is number of trials.
         NEV_time = NEV_time_list{i};
     else
-        [NEV_code, NEV_time]=fix_NEV_CTX(NEV_name, true, exp_param.timing_file, exp_param.condition_file, CORTEX_name, TB_CONFIG.CDT.throw_high_byte);
+        [NEV_code, NEV_time]=fix_NEV_CTX(NEV_name, TB_CONFIG.CDT.fix_NEV, exp_param.timing_file, exp_param.condition_file, CTX_name, TB_CONFIG.CDT.throw_high_byte);
     end
     
     % NEV_code and NEV_time are error-free code list and time list for only
@@ -90,11 +87,11 @@ for i = 1:length(NEV_info_list)
     %Margins (buffers in ms)
     before=TB_CONFIG.CDT.margin_before;
     after=TB_CONFIG.CDT.margin_after;
-    data.margins={before after};
+    time.margin=[before after];
     %%%%%%%%%%%%%%%%%%%%%%%
 
     % for compatibility
-    cdt.CHANNELS = unique(NEV_struct.Data.Spikes.Electrode); %list of channels %for compatibility
+%     cdt.CHANNELS = unique(NEV_struct.Data.Spikes.Electrode); %list of channels %for compatibility
     
     % neuron -> (channel, unit)
     cdt.map = unique([NEV_struct.Data.Spikes.Electrode; NEV_struct.Data.Spikes.Unit]','rows');
@@ -114,17 +111,20 @@ for i = 1:length(NEV_info_list)
         cdt.map = cdt.map(~(cdt.map(:,2)==0),:);
     end
     
-    cdt.TC = zeros(length(exp_param.cndlist),1); %keep the number of trials for each condition
-    cdt.EVENTS = {};%cell(length(cdt.CHANNELS),length(cndlist),####,nbTEST); %spike trains
-    cdt.info=NEV_info_list{i};%experiment's information
-    cdt.exp_param = exp_param;
+    cdt.trial_count = zeros(length(exp_param.condition_list),1); %keep the number of trials for each condition
+    cdt.spike = {};%cell(length(cdt.CHANNELS),length(condition_list),####,nbTEST); %spike trains
+    cdt.info=NEV_info_list{i};
+    cdt.exp_param = exp_param; %experiment's information
+    cdt.order = zeros(length(NEV_code),2);
     
+    map = cdt.map; % temporary variable to avoid warning of parfor
     
     tmp_struct = cell(length(NEV_code),1); % for parallel
     
     %conversion of TimeStamps in seconds
     TimeStamps=double(NEV_struct.Data.Spikes.TimeStamp)./double(NEV_struct.MetaTags.TimeRes);
     
+    cdt.event = {}; %cell [condition x number_of_trials], storing event codes and timestamps.
     
     % pre-process all needed spike information for each trial.
     for j = 1:length(NEV_code)
@@ -141,21 +141,21 @@ for i = 1:length(NEV_info_list)
     
     parfor j = 1:length(NEV_code)
         fprintf('processing trial %d...\n', j);
-        tNEV = NEV_code{j};
+        NEV_trial_code = NEV_code{j};
 
-        tcond = condition_code(tNEV,exp_param);
+        tcond = condition_code(NEV_trial_code,exp_param);
         
-        tmp_struct{j}.cndidx = find(exp_param.cndlist == tcond);
+        tmp_struct{j}.cndidx = find(exp_param.condition_list == tcond);
 
         
-        [~,codeIdx] = ismember(exp_param.align_code,tNEV);
-        assert(length(codeIdx) == 2*exp_param.number_of_test);
+        [~,codeIdx] = ismember(exp_param.align_code,NEV_trial_code);
+        assert(length(codeIdx) == 2*exp_param.number_of_test_per_condition);
         
-        starttime_list = zeros(exp_param.number_of_test,1)';
-        stoptime_list = zeros(exp_param.number_of_test,1)';
+        starttime_list = zeros(exp_param.number_of_test_per_condition,1)';
+        stoptime_list = zeros(exp_param.number_of_test_per_condition,1)';
         
         
-        for k = 1:exp_param.number_of_test
+        for k = 1:exp_param.number_of_test_per_condition
             starttime_list(k) = NEV_time{j}(codeIdx(2*k-1));
             stoptime_list(k) = NEV_time{j}(codeIdx(2*k));
         end
@@ -166,50 +166,60 @@ for i = 1:length(NEV_info_list)
         
         %fixation
         %temp code %%%%%%%
-        fixationcode = strfind(tNEV(:)',[23 8]);
+        fixationcode = strfind(NEV_trial_code(:)',[23 8]);
         assert(isscalar(fixationcode));
         fixationcode = fixationcode+1;
         
         tmp_struct{j}.fixation=NEV_time{j}(fixationcode)-(starttime_list(1)-before);
         %%%%%%%
         
-        tstartcode = (find(tNEV == exp_param.align_code(1)));
+        tstartcode = (find(NEV_trial_code == exp_param.align_code(1)));
         assert(isscalar(tstartcode)); %debug
-        tstopcode = (find(tNEV == exp_param.align_code(exp_param.number_of_test*2)));
+        tstopcode = (find(NEV_trial_code == exp_param.align_code(exp_param.number_of_test_per_condition*2)));
         assert(isscalar(tstopcode)); %debug
         
         % start and stop times
         starttime=NEV_time{j}(tstartcode)-before;
         stoptime =NEV_time{j}(tstopcode)+after;
         
-        % put those spikes in EVENTS cell array [chan x condition x repeat x test]
-        for c=1:size(cdt.map,1)
-            ch=cdt.map(c,1);
-            unit=cdt.map(c,2);
+        % debug
+        assert(starttime==starttime_list(1)-before);
+        
+        % put those spikes in spike cell array [chan x condition x repeat x test]
+        for c=1:size(map,1)
+            ch=map(c,1);
+            unit=map(c,2);
             spiketimes_c=(tmp_struct{j}.TimeStamps > starttime) & (tmp_struct{j}.TimeStamps < stoptime )...
                 & (tmp_struct{j}.Electrode==ch) & (tmp_struct{j}.Unit==unit);
-            tmp_struct{j}.EVENTS{c} = tmp_struct{j}.TimeStamps(spiketimes_c)-starttime; 
+            tmp_struct{j}.spike{c} = tmp_struct{j}.TimeStamps(spiketimes_c)-starttime; 
+            
         end
         
+        index_of_event_included = NEV_time{j}>=starttime & NEV_time{j}<=stoptime;
+        
+        tmp_struct{j}.event = [NEV_code{j}(index_of_event_included), NEV_time{j}(index_of_event_included)-starttime];
     end % end trial loop
     
     
     for j = 1:length(NEV_code)
         cndidx = tmp_struct{j}.cndidx;
-        cdt.TC(cndidx) = cdt.TC(cndidx) + 1;
-        data.starttime{cndidx,cdt.TC(cndidx)}=tmp_struct{j}.starttime;
-        data.stoptime{cndidx,cdt.TC(cndidx)}=tmp_struct{j}.stoptime;
+        cdt.trial_count(cndidx) = cdt.trial_count(cndidx) + 1;
+        time.starttime{cndidx,cdt.trial_count(cndidx)}=tmp_struct{j}.starttime;
+        time.stoptime{cndidx,cdt.trial_count(cndidx)}=tmp_struct{j}.stoptime;
+        time.fixation(cndidx,cdt.trial_count(cndidx))=tmp_struct{j}.fixation;
         
-        data.fixation(cndidx,cdt.TC(cndidx))=tmp_struct{j}.fixation;
+        cdt.event{cndidx,cdt.trial_count(cndidx)} = tmp_struct{j}.event;
+        
+        cdt.order(j,:) = [cndidx,cdt.trial_count(cndidx)];
         
         for c = 1:size(cdt.map,1)
-            cdt.EVENTS{c,cndidx,cdt.TC(cndidx)} =tmp_struct{j}.EVENTS{c};
+            cdt.spike{c,cndidx,cdt.trial_count(cndidx)} =tmp_struct{j}.spike{c};
         end
         
     end
     
-    cdt.data=data;
-    CDT_file_list{i} = [TB_CONFIG.PATH.save_cdt NEV_info_list{i}.key '.mat'];
+    cdt.time=time;
+    CDT_file_list{i} = [TB_CONFIG.PATH.save_cdt NEV_info_list{i}.key 'tt.mat'];
     
     save(CDT_file_list{i},'cdt','CONFIG');
     
