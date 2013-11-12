@@ -109,7 +109,7 @@ for i = 1:condition_number
         assert(isempty(cdt.event{i,j}));
         
         assert(isempty(time.start_time{i,j}));
-        assert(isempty(time.end_time{i,j}));
+        assert(isempty(time.stop_time{i,j}));
         
         assert(time.fixation(i,j) == 0);
         

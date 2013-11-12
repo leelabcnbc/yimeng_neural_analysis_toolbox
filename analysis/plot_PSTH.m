@@ -1,22 +1,18 @@
-function [  ] = plot_PSTH( cdt, channel, grouping, ncol, control_group )
+function [  ] = plot_PSTH( cdt, neuron, grouping, ncol, control_group )
 %PLOT_PSTH Summary of this function goes here
 %   Detailed explanation goes here
 
-nstimuli = cdt.exp_param.nstimuli;
-ntests = cdt.exp_param.number_of_test;
+nstimuli = length(cdt.exp_param.condition_list);
+ntests = cdt.exp_param.number_of_test_per_condition;
 
 
 info=cdt.info;
 
 
-if nargin < 2
-    channel=info.channel; % we only have one channel's info
-end
-
 % spike_times_cond(:,new_ntrials+1:new_ntrials+ntrials,ch) = cdt.EVENTS(ch,:,1:ntrials);
-spike_times_cond = cdt.EVENTS(channel,:,:);
-data = cdt.data;
-TC = cdt.TC;
+spike_times_cond = cdt.spike(neuron,:,:);
+data = cdt.time;
+TC = cdt.trial_count;
 
 spike_times_cond = squeeze(spike_times_cond);
 
@@ -26,8 +22,6 @@ spike_times_cond = squeeze(spike_times_cond);
 for i = 1:numel( spike_times_cond )
     spike_times_cond{i} = spike_times_cond{i}*1000;
 end
-
-
 
 
 if nargin < 3
@@ -50,8 +44,8 @@ end
 %calculate onsets, offsets, and fixation.
 for cond=1:nstimuli
     %assert(ntrials == TC(cond)); debug
-    onsets(cond,:)=mean(reshape(cell2mat(data.starttime(cond,1:TC(cond))),ntests,TC(cond)),2);
-    offsets(cond,:)=mean(reshape(cell2mat(data.stoptime(cond,1:TC(cond))),ntests,TC(cond)),2);
+    onsets(cond,:)=mean(reshape(cell2mat(data.start_time(cond,1:TC(cond))),ntests,TC(cond)),2);
+    offsets(cond,:)=mean(reshape(cell2mat(data.stop_time(cond,1:TC(cond))),ntests,TC(cond)),2);
     fixation(cond)=mean(data.fixation(cond,:));
 end
 onsets=mean(onsets);
@@ -97,6 +91,8 @@ end
 display(max_psth);
 
 
+
+
 for k = 1:numel(grouping)
     hold on;
     subplot(nrow,ncol,k);
@@ -108,17 +104,16 @@ for k = 1:numel(grouping)
     end
     xlim([0, x_bound]);ylim([0 max_psth]);
     xlabel('time (ms)');ylabel('firing rate (spk/s)')
-    
+    title(['neuron ' int2str(neuron) ',' ' group ' int2str(k)]);
     %display timesets
     display_timesets(onsets*1000,max_psth,'b','--');
     display_timesets(offsets*1000,max_psth,'b','--');
     display_timesets(fixation*1000,max_psth,'r','-');
     hold off;
     
-    fprintf('start: %f, end: %f, fixation: %f\n', onsets, offsets, fixation);
+    %fprintf('start: %f, end: %f, fixation: %f\n', onsets, offsets, fixation);
     
 end
-
 
 
 

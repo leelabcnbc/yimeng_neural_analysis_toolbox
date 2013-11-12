@@ -1,4 +1,4 @@
-function [firing_rate_array, firing_count_array, firing_rate_matrix_array, firing_count_matrix_array] = firing_stat(cdt, neuron, edge_type, edge, time_range)
+function [firing_rate_array, firing_count_array, firing_rate_matrix_array, firing_count_matrix_array, trial_count] = firing_stat(cdt, neuron, edge_type, edge, time_range)
 % FIRING_STAT ... 
 %  
 %   ... 
@@ -48,6 +48,8 @@ if nargin < 5
     time_range = 1:size(cdt.order,1);
 end
 
+length(time_range)
+
 if nargin < 3
     edge_type = 'relative'; % relative to 
 end 
@@ -66,6 +68,7 @@ firing_count_array = cell(length(TC),1);
 firing_rate_matrix_array = cell(length(TC),1);
 firing_count_matrix_array = cell(length(TC),1);
 
+trial_count = zeros(length(TC),1);
 
 for i = 1:length(TC)
     new_order = cdt.order(time_range,:);
@@ -74,6 +77,8 @@ for i = 1:length(TC)
     [firing_rate_array{i}, firing_count_array{i}, firing_rate_matrix_array{i}, firing_count_matrix_array{i}] = ...
         firing_stat_single_condition(spike(i,trial_idx), edge_type, edge,...
         cdt.time.margin(2),cdt.time.start_time(i,trial_idx), cdt.time.stop_time(i,trial_idx));
+    
+    trial_count(i) = length(trial_idx);
 end   
     
 end

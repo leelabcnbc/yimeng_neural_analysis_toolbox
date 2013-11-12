@@ -87,9 +87,17 @@ for i = 1:length(cdt.trial_count)
     new_start_time(i,1:length(index_array{i})) = time.start_time(i,index_array{i});
     new_stop_time(i,1:length(index_array{i})) = time.stop_time(i,index_array{i});
     new_fixation(i,1:length(index_array{i})) = time.fixation(i,index_array{i});
-    new_event(i,1:length(index_array{i})) = cdt.event(i,1:length(index_array{i}));
+    new_event(i,1:length(index_array{i})) = cdt.event(i,index_array{i});
     
     cdt.trial_count(i) = length(index_array{i});
+
+    order_index = find(cdt.order(:,1)==i);
+    
+    order_index_preserved = order_index(index_array{i});
+    order_index_throw = setdiff(order_index, order_index_preserved);
+    
+    cdt.order(order_index_preserved,2) = 1:length(index_array{i});
+    cdt.order(order_index_throw,:) = [];
     
 end
 
