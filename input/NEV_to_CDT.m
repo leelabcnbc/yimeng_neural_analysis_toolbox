@@ -195,7 +195,7 @@ for i = 1:length(NEV_info_list)
             
         end
         
-        index_of_event_included = NEV_time{j}>=starttime & NEV_time{j}<=stoptime;
+        index_of_event_included = NEV_time{j}> starttime & NEV_time{j}< stoptime; % consistent with spike timing; open interval.
         
         tmp_struct{j}.event = [NEV_code{j}(index_of_event_included), NEV_time{j}(index_of_event_included)-starttime];
     end % end trial loop
@@ -204,8 +204,8 @@ for i = 1:length(NEV_info_list)
     for j = 1:length(NEV_code)
         cndidx = tmp_struct{j}.cndidx;
         cdt.trial_count(cndidx) = cdt.trial_count(cndidx) + 1;
-        time.starttime{cndidx,cdt.trial_count(cndidx)}=tmp_struct{j}.starttime;
-        time.stoptime{cndidx,cdt.trial_count(cndidx)}=tmp_struct{j}.stoptime;
+        time.start_time{cndidx,cdt.trial_count(cndidx)}=tmp_struct{j}.starttime;
+        time.stop_time{cndidx,cdt.trial_count(cndidx)}=tmp_struct{j}.stoptime;
         time.fixation(cndidx,cdt.trial_count(cndidx))=tmp_struct{j}.fixation;
         
         cdt.event{cndidx,cdt.trial_count(cndidx)} = tmp_struct{j}.event;

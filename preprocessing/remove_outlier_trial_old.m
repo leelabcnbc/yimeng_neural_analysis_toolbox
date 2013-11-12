@@ -1,4 +1,4 @@
-function cdt = remove_outlier_trial(cdt, neuron, threshold)
+function cdt = remove_outlier_trial_old(cdt, channel, threshold)
 % REMOVE_OUTLIER_TRIAL remove trials that are outliers.
 %  
 %   ... 
@@ -42,15 +42,22 @@ function cdt = remove_outlier_trial(cdt, neuron, threshold)
 %% $25-Feb-2002 07:29:17 $ 
 %% blablabla
 
+disp(' !!!  You must enter code into this file < remove_outlier_trial.m > !!!') 
+ 
+
+if nargin < 2
+    channel = cdt.info.channel;
+end
+
 
 if nargin < 3
     threshold = 2;
 end
 
-spike = cdt.spike;
-event_size = size(spike);
+EVENTS = cdt.EVENTS;
+event_size = size(EVENTS);
 
-time = cdt.time;
+data = cdt.data;
 
 if length(event_size) == 2 % only one trial
     event_size(end+1) = 1;
@@ -58,46 +65,43 @@ end
 
 spike_count_struct = zeros(event_size(2:3));
 
-for i = 1:length(cdt.trial_count)
-    for j = 1:cdt.trial_count(i)
-        spike_count_struct(i,j) = numel(spike{neuron,i,j});
+for i = 1:length(cdt.TC)
+    for j = 1:cdt.TC(i)
+        spike_count_struct(i,j) = numel(EVENTS{channel,i,j});
     end
 end
 
 zscore_struct = zeros(event_size(2:3));
 index_array = cell(event_size(2),1);
 
-new_spike = {};
-new_start_time = {};
-new_stop_time = {};
-new_fixation = [];
-new_event = {};
-
-
-
-for i = 1:length(cdt.trial_count)
-    zscore_struct(i,1:cdt.trial_count(i)) = zscore(spike_count_struct(i,1:cdt.trial_count(i)));
+for i = 1:length(cdt.TC)
+    zscore_struct(i,1:cdt.TC(i)) = zscore(spike_count_struct(i,1:cdt.TC(i)));
     
-    index_array{i} = find(abs(zscore_struct(i,1:cdt.trial_count(i))) < threshold);
+    index_array{i} = find(abs(zscore_struct(i,1:cdt.TC(i))) < threshold);
     
 %     hist(zscore_struct(i,1:cdt.TC(i)));
 %     pause;
     
-    new_spike(:,i,1:length(index_array{i})) = spike(:,i,index_array{i});
-    new_start_time(i,1:length(index_array{i})) = time.start_time(i,index_array{i});
-    new_stop_time(i,1:length(index_array{i})) = time.stop_time(i,index_array{i});
-    new_fixation(i,1:length(index_array{i})) = time.fixation(i,index_array{i});
-    new_event(i,1:length(index_array{i})) = cdt.event(i,1:length(index_array{i}));
+    EVENTS(:,i,1:length(index_array{i})) = EVENTS(:,i,index_array{i});
+    data.starttime(i,1:length(index_array{i})) = data.starttime(i,index_array{i});
+    data.stoptime(i,1:length(index_array{i})) = data.stoptime(i,index_array{i});
+    data.fixation(i,1:length(index_array{i})) = data.fixation(i,index_array{i});
     
-    cdt.trial_count(i) = length(index_array{i});
+    
+    for j = length(index_array{i})+1:event_size(3)
+        for k = 1:event_size(1)
+            EVENTS{k,i,j} = [];
+        end
+        data.starttime{i,j} = [];
+        data.stoptime{i,j} = [];
+        data.fixation(i,j) = 0;
+    end
+    cdt.TC(i) = length(index_array{i});
     
 end
 
-cdt.spike = new_spike;
-cdt.time.start_time = new_start_time;
-cdt.time.stop_time = new_stop_time;
-cdt.time.fixation = new_fixation;
-cdt.event = new_event;
+cdt.EVENTS = EVENTS;
+cdt.data = data;
 
 end
 

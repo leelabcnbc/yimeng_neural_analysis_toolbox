@@ -20,7 +20,18 @@ In my opinion, the existing analysis tools are not flexible or well-structured. 
 
 I don't know what CDT stands for. However, since the structure used in this toolbox is inspired by what Corentin called CDT, I just borrow this name.
 
-*under construction*
+### Top structure
+On top, there're eight fields in a CDT structure.
+
+* **map** a map from cell # to [electrode #, unit #].
+* **trial_count** counts of every trial.
+* **spike** timestamps of spikes for each trial. [# of cells x # of conditions x # of trials] (# of trials can be different for different conditions, so some cells in this cell array is empty.)
+* **info** a copy of the information for this file from the recording database file.
+* **exp_param** a copy of the information for this file's experiment, from the experiment parameter file.
+* **order** the order in which each trial happened.
+* **event** event codes and timestamps for each trial.
+* **time** a struct containing important time information in this recording, including margin, start times of each test, stop times of each test, and fixation time.****
+
 
 ## Import
 

@@ -1,4 +1,4 @@
-function [firing_rate_array, firing_count_array, firing_rate_matrix_array, firing_count_matrix_array] = firing_stat(cdt, channel, edge)
+function [firing_rate_array, firing_count_array, firing_rate_matrix_array, firing_count_matrix_array] = firing_stat(cdt, neuron, edge_type, edge, time_range)
 % FIRING_STAT ... 
 %  
 %   ... 
@@ -42,19 +42,23 @@ function [firing_rate_array, firing_count_array, firing_rate_matrix_array, firin
 %% $25-Feb-2002 07:29:17 $ 
 %% blablabla
 
-disp(' !!!  You must enter code into this file < firing_stat.m > !!!') 
+
+
+if nargin < 5
+    time_range = 1:size(cdt.order,1);
+end
 
 if nargin < 3
-    edge = [0, inf];
+    edge_type = 'relative'; % relative to 
+end 
+
+if nargin < 4
+    edge = 0;
 end
 
-if nargin < 2
-    channel = cdt.info.channel;
-end
+TC = cdt.trial_count;
 
-TC = cdt.TC;
-
-EVENTS = squeeze(cdt.EVENTS(channel,:,:));
+spike = squeeze(cdt.spike(neuron,:,:));
 
 firing_rate_array = cell(length(TC),1);
 firing_count_array = cell(length(TC),1);
@@ -62,8 +66,14 @@ firing_count_array = cell(length(TC),1);
 firing_rate_matrix_array = cell(length(TC),1);
 firing_count_matrix_array = cell(length(TC),1);
 
+
 for i = 1:length(TC)
-    [firing_rate_array{i}, firing_count_array{i}, firing_rate_matrix_array{i}, firing_count_matrix_array{i}] = firing_stat_single_condition(EVENTS(i,1:TC(i)),edge,cdt.data.stoptime(i,1:TC(i)),cdt.data.margins{2});
+    new_order = cdt.order(time_range,:);
+    trial_idx = new_order((new_order(:,1) == i),2);
+
+    [firing_rate_array{i}, firing_count_array{i}, firing_rate_matrix_array{i}, firing_count_matrix_array{i}] = ...
+        firing_stat_single_condition(spike(i,trial_idx), edge_type, edge,...
+        cdt.time.margin(2),cdt.time.start_time(i,trial_idx), cdt.time.stop_time(i,trial_idx));
 end   
     
 end
@@ -71,34 +81,64 @@ end
 
 
 
-function [firing_rate_list, firing_count_list, firing_rate_matrix, firing_count_matrix] = firing_stat_single_condition(spike_times,edge,stoptime,margin)
+function [firing_rate_list, firing_count_list, firing_rate_matrix, firing_count_matrix] = firing_stat_single_condition(spike_times,edge_type,edge,after_margin,start_time,stop_time)
 spike_times = spike_times(:);
 
-firing_count_matrix = zeros(length(spike_times),numel(edge)-1);
-firing_rate_matrix = zeros(length(spike_times),numel(edge)-1);
+switch lower(edge_type)
+    case 'relative'
+        number_of_bin = numel(start_time{1});
+        firing_count_matrix = zeros(length(spike_times),number_of_bin);
+        firing_rate_matrix = zeros(length(spike_times),number_of_bin);
+        
+    case 'absolute'
+        firing_count_matrix = zeros(length(spike_times),numel(edge)/2);
+        firing_rate_matrix = zeros(length(spike_times),numel(edge)/2);
+end
+
+
+
    
 % process trial by trial
 for i = 1:length(spike_times)
-    tmp_edge = edge;
     
-    if tmp_edge(end) == inf
-        tmp_edge(end) = stoptime{i}(end) + margin;
+    % find the edge used in this case
+    
+    switch lower(edge_type)
+        case 'relative'
+            start_time_this_trial = start_time{i};
+            stop_time_this_trial = stop_time{i};
+            tmp_edge = [start_time_this_trial(:)'; stop_time_this_trial(:)'];
+            tmp_edge = tmp_edge(:);
+            assert(issorted(tmp_edge));
+            tmp_edge = tmp_edge + edge(:);
+        case 'absolute'
+            tmp_edge = edge(:);
     end
     
-    firing_count = histc(spike_times{i}, tmp_edge);
+    assert(rem(length(tmp_edge),2) == 0);
     
-    if edge(end) == inf
-        assert(firing_count(end) == 0);
+    number_of_bins = length(tmp_edge)/2;
+    
+    for j = 1:number_of_bins
+        start_edge = tmp_edge(2*j-1);
+        stop_edge = tmp_edge(2*j);
+        
+        if stop_edge == inf
+            stop_edge = stop_time{i}(end) + after_margin;
+        end
+        
+        assert(start_edge >=0);
+        assert(stop_edge <= stop_time{i}(end) + after_margin);
+        assert(stop_edge > start_edge);
+        
+        tmp_count = histc(spike_times{i},[start_edge, stop_edge]);
+        
+        firing_count_matrix(i,j) = tmp_count(1);
+        firing_rate_matrix(i,j) = tmp_count(1)/(stop_edge-start_edge);
     end
-    
-    firing_count_matrix(i,:) = firing_count(1:end-1);
-    
-    firing_rate_matrix(i,:) = firing_count_matrix(i,:)./diff(tmp_edge);
-
 end
 
 firing_count_list = mean(firing_count_matrix,1)';
-
 firing_rate_list = mean(firing_rate_matrix,1)';
 
 end
@@ -109,3 +149,5 @@ end
 % Created with NEWFCN.m by Frank González-Morphy 
 % Contact...: frank.gonzalez-morphy@mathworks.de  
 % ===== EOF ====== [firing_stat.m] ======  
+
+
