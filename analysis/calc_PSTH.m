@@ -58,6 +58,10 @@ if isempty(bounds)
     bounds=[0 ceil(max(spike_times))];
 end
 
+if  length(bounds) ~= 2
+    psth = 0; return;
+end
+
 %psth histogram count
 psth = histc(spike_times,bounds(1):bounds(2));
 

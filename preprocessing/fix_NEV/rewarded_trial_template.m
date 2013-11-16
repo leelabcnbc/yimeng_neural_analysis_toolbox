@@ -1,6 +1,9 @@
 function [ trial_template ] = rewarded_trial_template( tm_file_name, cnd_file_name )
 %REWARDED_TRIAL_TEMPLATE Summary of this function goes here
 %   Detailed explanation goes here
+
+assert(~isempty(tm_file_name));
+assert(~isempty(cnd_file_name));
 trial_template = {};
 switch lower(tm_file_name)
     case {'3ec_or.tm','3ec_ora.tm','3ec_a.tm','3ec.tm'}

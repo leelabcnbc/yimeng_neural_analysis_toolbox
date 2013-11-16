@@ -16,6 +16,11 @@ TC = cdt.trial_count;
 
 spike_times_cond = squeeze(spike_times_cond);
 
+% fix case for single trial
+if size(spike_times_cond,1) == 1
+    spike_times_cond = spike_times_cond';
+end
+
 % grouping now provides absolute indexing into the second dimension of
 % cdt.EVENTS.
 
@@ -104,7 +109,8 @@ for k = 1:numel(grouping)
     end
     xlim([0, x_bound]);ylim([0 max_psth]);
     xlabel('time (ms)');ylabel('firing rate (spk/s)')
-    title(['neuron ' int2str(neuron) ',' ' group ' int2str(k)]);
+    
+    title(['neuron ' int2str(neuron) ' (' int2str(cdt.map(neuron,1)) ',' int2str(cdt.map(neuron,2)) ')' ','  ' group ' int2str(k)]);
     %display timesets
     display_timesets(onsets*1000,max_psth,'b','--');
     display_timesets(offsets*1000,max_psth,'b','--');

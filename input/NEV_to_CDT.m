@@ -219,7 +219,7 @@ for i = 1:length(NEV_info_list)
     end
     
     cdt.time=time;
-    CDT_file_list{i} = [TB_CONFIG.PATH.save_cdt NEV_info_list{i}.key 'tt.mat'];
+    CDT_file_list{i} = [TB_CONFIG.PATH.save_cdt NEV_info_list{i}.key '.mat'];
     
     save(CDT_file_list{i},'cdt','CONFIG');
     
