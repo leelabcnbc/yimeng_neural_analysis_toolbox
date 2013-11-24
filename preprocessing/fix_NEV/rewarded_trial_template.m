@@ -33,9 +33,11 @@ switch lower(tm_file_name)
             case 'edge_cal.cnd'
                 trial_template{6} = trial_template_part(2, 192, 192, false); % 192-192 = 0 = floor(63/64)
                 trial_template{7} = trial_template_part(2, 192, 255, true);
+            otherwise
+                error('no matching condition file');
         end
-                
-                
+        
+        
         % before giving the target code
         trial_template{8} = trial_template_part(1, 23, false);
         trial_template{9} = trial_template_part(1, 8, false);
@@ -47,7 +49,7 @@ switch lower(tm_file_name)
         trial_template{15} = trial_template_part(1, 30, false);
         % target code
         trial_template{16} = trial_template_part(2, 121, 124, false);
-        % another rigid block 
+        % another rigid block
         trial_template{17} = trial_template_part(1, 120, false);
         trial_template{18} = trial_template_part(1, 8, false);
         trial_template{19} = trial_template_part(1, 24, false);
@@ -63,7 +65,7 @@ switch lower(tm_file_name)
         trial_template{4} = trial_template_part(1, 100, false);
         trial_template{5} = trial_template_part(1, 16, false);
         
-        trial_template{6} = trial_template_part(2, 192, 195, false); 
+        trial_template{6} = trial_template_part(2, 192, 195, false);
         trial_template{7} = trial_template_part(2, 192, 255, true);
         
         trial_template{8} = trial_template_part(1, 23, false);
@@ -74,7 +76,7 @@ switch lower(tm_file_name)
         
         % target code
         trial_template{13} = trial_template_part(2, 110, 113, false);
-        % another rigid block 
+        % another rigid block
         
         trial_template{14} = trial_template_part(1, 120, false);
         trial_template{15} = trial_template_part(1, 8, false);
@@ -84,21 +86,57 @@ switch lower(tm_file_name)
         trial_template{19} = trial_template_part(1, 101, false);
         trial_template{20} = trial_template_part(1, 96, false);
         trial_template{21} = trial_template_part(1, 18, false);
+    case {'contrast.tm'}
+        trial_template{1} = trial_template_part(1, 9, false);
+        trial_template{2} = trial_template_part(1, 10, false);
+        trial_template{3} = trial_template_part(1, 15, false);
+        switch lower(cnd_file_name)
+            case 'contrast.cnd'
+                trial_template{4} = trial_template_part(2, 140, 171, false);
+            otherwise
+                error('no matching condition file');
+        end
+        
+        trial_template{5} = trial_template_part(1, 100, false);
+        trial_template{6} = trial_template_part(1, 16, false);
+        trial_template{7} = trial_template_part(1, 23, false);
+        trial_template{8} = trial_template_part(1, 8, false);
+        trial_template{9} = trial_template_part(1, 33, false);
+        trial_template{10} = trial_template_part(1, 31, false);
+        
+        trial_template{11} = trial_template_part(2, 121, 123, false);
+        
+        trial_template{12} = trial_template_part(1, 120, false);
+        trial_template{13} = trial_template_part(1, 11, false);
+        
+        
+        trial_template{14} = trial_template_part(1, 8, false);
+        
+        trial_template{15} = trial_template_part(1, 31, false);
+        
+        trial_template{16} = trial_template_part(1, 24, false);
+        trial_template{17} = trial_template_part(1, 17, false);
+        trial_template{18} = trial_template_part(1, 101, false);
+        trial_template{19} = trial_template_part(1, 96, false);
+        trial_template{20} = trial_template_part(1, 18, false);
+        
+    otherwise
+        error('no matching timing file');
 end
 
 end
 
 function template_part = trial_template_part(type, number1, missable_number2, missable)
-    switch type
-        case 1
-            template_part.type = 1;
-            template_part.value = number1; % actually, I can instead use min_value == max_value,
-            % and eliminate the use of type. However, maybe in the future we have to support a range of incontinuous values.
-            template_part.missable = missable_number2;
-        case 2 
-            template_part.type = 2;
-            template_part.min_value = number1;
-            template_part.max_value = missable_number2;
-            template_part.missable = missable;
-    end
+switch type
+    case 1
+        template_part.type = 1;
+        template_part.value = number1; % actually, I can instead use min_value == max_value,
+        % and eliminate the use of type. However, maybe in the future we have to support a range of incontinuous values.
+        template_part.missable = missable_number2;
+    case 2
+        template_part.type = 2;
+        template_part.min_value = number1;
+        template_part.max_value = missable_number2;
+        template_part.missable = missable;
+end
 end
