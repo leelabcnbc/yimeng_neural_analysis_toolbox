@@ -67,7 +67,7 @@ for i = 1:length(NEV_info_list)
     %%%%%%%%%%%%%%%%%%%%%%%%
     
     
-    NEV_struct = openNEV(NEV_name,'nosave','nomat');
+    NEV_struct = openNEV(NEV_name,'nosave','nomat','noread'); % new version of NPMK
     
     
     exp_param = TB_CONFIG.exp_parameter_map(exp_name);
