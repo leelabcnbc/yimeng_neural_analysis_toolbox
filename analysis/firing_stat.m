@@ -3,24 +3,35 @@ function [firing_rate_array, firing_count_array, firing_rate_matrix_array, firin
 %  
 %   ... 
 % 
-% Syntax:  [output1,output2] = function_name(input1,input2,input3)
+% Syntax:  [firing_rate_array, firing_count_array, firing_rate_matrix_array,
+% firing_count_matrix_array, trial_count] = firing_stat(cdt, neuron,
+% edge_type, edge, time_range)
 %
 % Inputs:
-%    input1 - Description
-%    input2 - Description
-%    input3 - Description
+%    cdt - cdt struct
+%    neuron - the neuron to be analyzed
+%    edge_type - 'relative' or 'absolute'. You can use the times given in
+%    start_time and stop_time to define the edge ('relative'), or you can
+%    specify the edge yourself
+%    edge - if edge_type is 'relative', here, we can make some adjustments
+%    relative to these edges, say, [-0.1, 0.1] will make a 0.1s margin both
+%    befre and after the original time window. If edge_type is 'absolute',
+%    we have to specify the starting time and ending time for each bin. you
+%    can specify Inf as the end time of the last bin.
+%    time_range - specify the trials you want to include for calculation
 %
 % Outputs:
-%    output1 - Description
-%    output2 - Description
+%    firing_rate_array - firing rate per condition. cell array, each cell
+%    has a Bx1 vector, where B is number of bins.
+%    firing_count_array - same as before, using firing count instead
+%    firing_rate_matrix_array - cell array, each cell i has a [TC(i) x B]
+%    double matrix, of firing rates for each trial, each bin
+%    firing_count_matrix_array - same as above, using firing count instead
+%    trial_count - number of trials per condition
 %
-% Example: 
-%    Line 1 of example
-%    Line 2 of example
-%    Line 3 of example
 %
 % Other m-files required: none
-% Subfunctions: none
+% Subfunctions: firing_stat_single_condition
 % MAT-files required: none
 %
 % See also: OTHER_FUNCTION_NAME1,  OTHER_FUNCTION_NAME2
@@ -36,19 +47,14 @@ function [firing_rate_array, firing_count_array, firing_rate_matrix_array, firin
 %% FILENAME  : firing_stat.m 
 
 %% MODIFICATIONS:
-%% $26-Sep-2002 14:44:35 $
-%% blablabla
-%% ---
-%% $25-Feb-2002 07:29:17 $ 
-%% blablabla
+%% $27-Nov-2013 22:17:40 $
+%% Add documentation, fix a rare bug
 
 
 
 if nargin < 5
     time_range = 1:size(cdt.order,1);
 end
-
-length(time_range)
 
 if nargin < 3
     edge_type = 'relative'; % relative to 
@@ -61,6 +67,11 @@ end
 TC = cdt.trial_count;
 
 spike = squeeze(cdt.spike(neuron,:,:));
+
+% case for single trial
+if size(spike,1) == 1
+    spike = spike';
+end
 
 firing_rate_array = cell(length(TC),1);
 firing_count_array = cell(length(TC),1);
