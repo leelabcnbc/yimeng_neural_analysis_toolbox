@@ -70,14 +70,17 @@ for i = 1:length(NEV_info_list)
     NEV_struct = openNEV(NEV_name,'nosave','nomat','noread'); % new version of NPMK
     
     
-    exp_param = TB_CONFIG.exp_parameter_map(exp_name);
-    exp_param.condition_list = (exp_param.condition_number(1):exp_param.condition_number(2))';
+%     exp_param = TB_CONFIG.exp_parameter_map(exp_name);
+
+    exp_param = load_exp_parameter(exp_name);
+
+%     exp_param.condition_list = (exp_param.condition_number(1):exp_param.condition_number(2))';
     
     if external_code
         NEV_code = NEV_code_list{i}; % this is  N*1 cell array, where N is number of trials.
         NEV_time = NEV_time_list{i};
     else
-        [NEV_code, NEV_time]=fix_NEV_CTX(NEV_name, TB_CONFIG.CDT.fix_NEV, exp_param.timing_file, exp_param.condition_file, CTX_name, TB_CONFIG.CDT.throw_high_byte);
+        [NEV_code, NEV_time]=fix_NEV_CTX(NEV_name, TB_CONFIG.CDT.fix_NEV, exp_param.trial_template, CTX_name, TB_CONFIG.CDT.throw_high_byte);
     end
     
     % NEV_code and NEV_time are error-free code list and time list for only
@@ -143,7 +146,9 @@ for i = 1:length(NEV_info_list)
         fprintf('processing trial %d...\n', j);
         NEV_trial_code = NEV_code{j};
 
-        tcond = condition_code(NEV_trial_code,exp_param);
+        tcond = exp_param.condition_code(NEV_trial_code);
+        
+        assert(isscalar(tcond));
         
         tmp_struct{j}.cndidx = find(exp_param.condition_list == tcond);
 
@@ -219,7 +224,7 @@ for i = 1:length(NEV_info_list)
     end
     
     cdt.time=time;
-    CDT_file_list{i} = [TB_CONFIG.PATH.save_cdt NEV_info_list{i}.key '.mat'];
+    CDT_file_list{i} = [TB_CONFIG.PATH.save_cdt NEV_info_list{i}.key 'yuke2.mat'];
     
     save(CDT_file_list{i},'cdt','CONFIG');
     

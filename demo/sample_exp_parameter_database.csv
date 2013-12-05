@@ -1,5 +1,5 @@
 exp_name,condition_number,number_of_test_per_condition,align_code,timing_file,condition_file
-grat_cal,"1 16",3,"25 26 27 28 29 30",,
+grat_cal,"1 16",3,"25 26 27 28 29 30",3ec_or.tm,gratings.cnd
 edge_test,"1 416",3,"25 26 27 28 29 30",3ec_or.tm,edge_or.cnd
 contrast,"1 32",1,"33 120",contrast.tm,contrast.cnd
 intrinsic_big,"1 195",1,"25 26",cg.tm,cg1.cnd

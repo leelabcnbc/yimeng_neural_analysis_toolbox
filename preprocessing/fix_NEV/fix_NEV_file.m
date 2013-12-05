@@ -1,4 +1,4 @@
-function [NEV_codes_new, NEV_times_new, rewarded_trials, NEV_codes_old, NEV_times_old, NEV_split]=fix_NEV_file(NEV_file_name, fixing, tm_file_name, cnd_file_name, throw_high_byte)
+function [NEV_codes_new, NEV_times_new, rewarded_trials, NEV_codes_old, NEV_times_old, NEV_split]=fix_NEV_file(NEV_file_name, fixing, trial_template, throw_high_byte)
 %FIX_NEV_FILE_NEW fix NEV file based on Cortex file.
 %   fix_time_count is a vector recording number of fixes applied to each
 %   trial.
@@ -18,11 +18,11 @@ function [NEV_codes_new, NEV_times_new, rewarded_trials, NEV_codes_old, NEV_time
 % NEV_times_old=NEV(sync_channel_idx,3);
 
 
-if nargin < 5
+if nargin < 4
     throw_high_byte = true;
 end
 
-NEV_NMPK=openNEV(NEV_file_name,'nosave','nomat');
+NEV_NMPK=openNEV(NEV_file_name,'nosave','nomat','noread'); % for new NPMK
 NEV_codes_old=double(NEV_NMPK.Data.SerialDigitalIO.UnparsedData(1:end));%codes
 NEV_times_old=double(NEV_NMPK.Data.SerialDigitalIO.TimeStampSec(1:end));%time stamps of codes
 
@@ -48,8 +48,6 @@ NEV_split = split_trial_NEV(NEV_codes_old, startcodes, stopcodes);
 NEV_codes_new = {};
 NEV_times_new = {};
 
-
-
 rewarded_trials = [];
 
 
@@ -62,7 +60,7 @@ for i = 1:length(NEV_split)
         
         fixable = true;
         if fixing
-            [nev_trial_new, fixable] = fix_NEV_trial_TM(nev_trial, tm_file_name, cnd_file_name);
+            [nev_trial_new, fixable] = fix_NEV_trial_TM(nev_trial, trial_template);
         end
        
         if fixable

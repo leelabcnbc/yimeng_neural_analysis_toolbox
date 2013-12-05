@@ -1,7 +1,7 @@
-function [ new_NEV_trial, fixable ] = fix_NEV_trial_TM(NEV_trial, tm_file_name, cnd_file_name)
+function [ new_NEV_trial, fixable ] = fix_NEV_trial_TM(NEV_trial, trial_template)
 %FIX_NEV_TRIAL_TM fix an NEV trial based on timing file
 %   Detailed explanation goes here
-trial_template = rewarded_trial_template(tm_file_name, cnd_file_name);
+% trial_template = rewarded_trial_template(tm_file_name, cnd_file_name);
 
 % our template is of fixed length.
 new_NEV_trial = zeros(length(trial_template),2);

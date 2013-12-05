@@ -14,13 +14,18 @@ assert(cell_number == size(cdt.spike,1));
 total_trial = sum(cdt.trial_count);
 assert(total_trial == size(cdt.order,1));
 
+if isfield(exp_param,'condition_number')
 % check number of conditions
 condition_list = exp_param.condition_number(1):exp_param.condition_number(2);
+else 
+condition_list = exp_param.condition_list;
+end
 condition_list = condition_list(:);
 
 condition_number = length(condition_list);
 
-assert(isequal(condition_list,exp_param.condition_list));
+assert(isequal(condition_list(:),exp_param.condition_list(:)));
+
 assert(condition_number == size(time.start_time,1));
 assert(condition_number == size(time.stop_time,1));
 assert(condition_number == size(time.fixation,1));
