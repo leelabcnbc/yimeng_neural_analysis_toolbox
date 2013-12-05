@@ -1,19 +1,20 @@
-function [ NEV_codes_new, NEV_times_new ] = fix_NEV_CTX( NEV_file_name, fixing, tm_file_name, cnd_file_name, CTX_file_name, throw_high_byte)
+function [ NEV_codes_new, NEV_times_new ] = fix_NEV_CTX( NEV_file_name, fixing, trial_template, CTX_file_name, throw_high_byte)
 %FIX_NEV_CTX Summary of this function goes here
 %   Detailed explanation goes here
 
-if nargin < 6
+if nargin < 5
     throw_high_byte = true;
 end
 
 fixed_NEV_trials_array = [];
 errors_fixed_by_CTX = 0;
 
-[NEV_codes_new, NEV_times_new, NEV_rewarded_trials] = fix_NEV_file(NEV_file_name, fixing, tm_file_name, cnd_file_name, throw_high_byte);
+[NEV_codes_new, NEV_times_new, NEV_rewarded_trials] = fix_NEV_file(NEV_file_name, fixing, trial_template, throw_high_byte);
 
-if fixing && exist(CTX_file_name,'file')==2 % use CTX as additional source of confidence
-    [CTX_codes_new, ~, CORTEX_rewarded_trials]=fix_CTX_file(CTX_file_name, tm_file_name, cnd_file_name)
-    
+
+if fixing && exist(CTX_file_name,'file') == 2 % use CTX as additional source of confidence
+    [CTX_codes_new, ~, CORTEX_rewarded_trials]=fix_CTX_file(CTX_file_name, trial_template);
+
     extra_CORTEX_trials = setdiff(CORTEX_rewarded_trials, NEV_rewarded_trials);
     if ~isempty(extra_CORTEX_trials)
         fprintf('for file, we have extra Cortex trials.\n');

@@ -1,4 +1,4 @@
-function [CTX_codes_new, CTX_times_new, rewarded_trials,false_rewarded_trials,fixed_rewarded_trials,reasonable_trials,CTX_struct]=fix_CTX_file(CTX_file_name, tm_file_name, cnd_file_name)
+function [CTX_codes_new, CTX_times_new, rewarded_trials,false_rewarded_trials,fixed_rewarded_trials,reasonable_trials,CTX_struct]=fix_CTX_file(CTX_file_name, trial_template)
 %FIX_NEV_FILE_NEW fix NEV file based on Cortex file.
 %   fix_time_count is a vector recording number of fixes applied to each
 %   trial.
@@ -32,7 +32,7 @@ for i = 1:length(CTX_struct)
         
         if ismember(96, CTX_trial_event(:,1)) % fixing a perhaps good trial (yes, sometimes ctx can get corruptted..)
             fprintf('fixing a perhaps good trial...\n');
-            [CTX_trial_event_new, fixable] = fix_NEV_trial_TM(CTX_trial_event, tm_file_name, cnd_file_name);
+            [CTX_trial_event_new, fixable] = fix_NEV_trial_TM(CTX_trial_event, trial_template);
             if fixable
                 rewarded_trials(end+1) = i;
                 % put them back as cells... or I need some other formats?

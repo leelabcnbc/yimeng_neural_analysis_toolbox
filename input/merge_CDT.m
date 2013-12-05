@@ -14,6 +14,9 @@ cdt_merged.info.NEV_path = 'merged.nev';
 cdt_merged.info.CTX_path = 'merged.0';
 cdt_merged.info.comment = 'merged';
 
+% put all pre merged info here
+
+
 
 for i = 2:length(cdt_list)
     cdt_next = load(cdt_list{i});
