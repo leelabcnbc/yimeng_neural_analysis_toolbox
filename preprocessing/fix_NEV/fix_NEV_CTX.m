@@ -11,7 +11,7 @@ errors_fixed_by_CTX = 0;
 
 [NEV_codes_new, NEV_times_new, NEV_rewarded_trials] = fix_NEV_file(NEV_file_name, fixing, tm_file_name, cnd_file_name, throw_high_byte);
 
-if fixing && exist(CTX_file_name,'file') % use CTX as additional source of confidence
+if fixing && exist(CTX_file_name,'file')==2 % use CTX as additional source of confidence
     [CTX_codes_new, ~, CORTEX_rewarded_trials]=fix_CTX_file(CTX_file_name, tm_file_name, cnd_file_name)
     
     extra_CORTEX_trials = setdiff(CORTEX_rewarded_trials, NEV_rewarded_trials);
