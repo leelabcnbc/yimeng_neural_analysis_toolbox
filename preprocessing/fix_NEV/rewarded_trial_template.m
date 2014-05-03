@@ -33,6 +33,9 @@ switch lower(tm_file_name)
             case 'edge_cal.cnd'
                 trial_template{6} = trial_template_part(2, 192, 192, false); % 192-192 = 0 = floor(63/64)
                 trial_template{7} = trial_template_part(2, 192, 255, true);
+            case 'images_272.cnd'
+                trial_template{6} = trial_template_part(2, 192, 196, false); % 196-192 = 4 = floor(271/64)
+                trial_template{7} = trial_template_part(2, 192, 255, true);
             otherwise
                 error('no matching condition file');
         end
