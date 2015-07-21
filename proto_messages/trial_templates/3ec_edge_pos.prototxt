@@ -1,0 +1,84 @@
+comment: "trial template for 3ec_xxx tm file and edge_pos cnd file"
+codes {
+    code: 9
+}
+codes {
+    code: 10
+}
+codes {
+    code: 15
+}
+codes {
+    code: 100
+}
+codes {
+    code: 16
+}
+
+
+codes {
+    type: CODETYPE_RANGE
+    code: 192
+    code: 199
+}
+codes {
+    type: CODETYPE_RANGE
+    code: 192
+    code: 255
+    missable: true
+}
+
+
+codes {
+    code: 23
+}
+codes {
+    code: 8
+}
+codes {
+    code: 25
+}
+codes {
+    code: 26
+}
+codes {
+    code: 27
+}
+codes {
+    code: 28
+}
+codes {
+    code: 29
+}
+codes {
+    code: 30
+}
+codes {
+    type: CODETYPE_RANGE
+    code: 121
+    code: 124
+}
+codes {
+    code: 120
+}
+codes {
+    code: 8
+}
+codes {
+    code: 24
+}
+codes {
+    code: 17
+}
+codes {
+    code: 0
+}
+codes {
+    code: 101
+}
+codes {
+    code: 96
+}
+codes {
+    code: 18
+}
