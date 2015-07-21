@@ -36,6 +36,8 @@ switch(template_part.type)
         % the missing feature is not implemented yet...
     case 2
         % we assume that a spurious code will not occur between two condition codes.
+        % basically this is only trying to handle the two byte encoding
+        % scheme of condition numbers.
         valid_index = find((NEV_trial(:,1)>=template_part.min_value) & (NEV_trial(:,1)<=template_part.max_value));
         valid_index = valid_index(valid_index >= next_idx_in_old_trial);
         
@@ -48,8 +50,8 @@ switch(template_part.type)
                 new_trial_part = NEV_trial(valid_index(1),:);
                 next_idx_in_old_trial = valid_index(1)+1;
             case true
-                if isempty(valid_index) || (next_idx_in_old_trial~=valid_index(1)) % we missed our dear condition code
-                    new_trial_part = NEV_trial(next_idx_in_old_trial-1,:); % copy the previous row
+                if isempty(valid_index) || (next_idx_in_old_trial~=valid_index(1)) % we missed our dear condition code. why second case? It means there are too many spurious codes between. actually, two codes should happen together.
+                    new_trial_part = NEV_trial(next_idx_in_old_trial-1,:); % copy the previous row % HERE I assume missing occur because same 2 codes in a row.
                     if ~((NEV_trial(next_idx_in_old_trial-1,1)>=template_part.min_value) && (NEV_trial(next_idx_in_old_trial-1,1)<=template_part.max_value))
                         fixable = false;
                     return;
