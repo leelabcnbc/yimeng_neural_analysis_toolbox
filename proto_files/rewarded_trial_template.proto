@@ -1,0 +1,18 @@
+package rewarded_trial_template;
+
+option java_package = "com.leelab.monkey_exp";
+option java_outer_classname = "RewardedTrialTemplateProtos";
+
+message SingleCode {
+    enum CodeType { // two types of event code: ranged or single
+        CODETYPE_SINGLE = 0; // simply a fixed number.
+        CODETYPE_RANGE = 1; // a value falling between
+        CODETYPE_SET = 2; // one of several (possibly noncontiguous) values in a set. NOT implemented yet.
+    }
+    repeated int32 code = 1; // a set of codes. for CODETYPE_SINGLE, there should be one number; for CODETYPE_RANGE, should be two; for CODETYPE_SET, at least one.
+    optional bool missable = 2 [default = false]; // can this code be missing in the event codes.
+}
+
+message RewardedTrialTemplate {
+    repeated SingleCode codes = 1;
+}
