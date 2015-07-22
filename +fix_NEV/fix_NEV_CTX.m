@@ -47,6 +47,9 @@ if fixing && exist(CTX_file_name,'file') == 2 % use CTX as additional source of 
     debugging_info.CORTEX_rewarded_trials = CORTEX_rewarded_trials;
     debugging_info.extra_CORTEX_trials = extra_CORTEX_trials;
     
+    % This merging assumes that the indices of trials are consistent for
+    % two files. That is, trial x in NEV should correspond to trial x in
+    % CTX.
     useful_CORTEX_trials_for_NEV = intersect(CORTEX_rewarded_trials, NEV_rewarded_trials);
     unchecked_NEV_trials = setdiff(NEV_rewarded_trials, CORTEX_rewarded_trials);
     debugging_info.unchecked_NEV_trials = unchecked_NEV_trials;
@@ -67,6 +70,8 @@ if fixing && exist(CTX_file_name,'file') == 2 % use CTX as additional source of 
             
             fprintf('Replacing NEV codes with Cortex ones...\n');
             NEV_codes_new{NEV_rewarded_trials==rewarded_trial_idx} = CORTEX_code;
+            % Notice that I only changed the code, not time.
+            % this should not affect much, since the changed codes are usually not critical for trial extraction.
         end
     end
     debugging_info.fixed_NEV_trials_array = fixed_NEV_trials_by_CTX_array;

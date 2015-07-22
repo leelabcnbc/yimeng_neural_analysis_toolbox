@@ -47,7 +47,7 @@ rewardcode = double(trial_template.getRewardcode());
 %% for loop over trials.
 
 for i = 1:length(CTX_struct)
-    fprintf('fixing trial %d...\n',i);
+    %fprintf('fixing trial %d...\n',i);
     
     CTX_trial_struct = CTX_struct{i};
     
@@ -59,7 +59,7 @@ for i = 1:length(CTX_struct)
         CTX_trial_event = prune_ctx_trial_corentin(CTX_trial_event); %pre process... remove spikes
         
         if ismember(rewardcode, CTX_trial_event(:,1)) % fixing a perhaps good trial (yes, sometimes ctx can get corruptted..)
-            fprintf('fixing a perhaps good trial...\n');
+            %fprintf('fixing a perhaps good trial...\n');
             [CTX_trial_event_new, fixable] = fix_NEV_trial_TM(CTX_trial_event, trial_template);
             if fixable
                 rewarded_trials(end+1) = i;

@@ -48,14 +48,14 @@ NEV_times_new = {};
 rewarded_trials = [];
 
 for i = 1:length(NEV_split)
-    fprintf('fixing trial %d...\n',i);
+    %fprintf('fixing trial %d...\n',i);
     % fetch next trial
     nev_trial = ... % nev_trial is a Nx2 matrix, first column code, second column time.
         [NEV_codes_old(NEV_split{i}.start:NEV_split{i}.end), ...
         NEV_times_old(NEV_split{i}.start:NEV_split{i}.end)];
     % it's a rewarded trial... let's use fix_NEV_trial_TM!
     if ismember(rewardcode, nev_trial(:,1))
-        fprintf('fixing a perhaps good trial...\n');
+        %fprintf('fixing a perhaps good trial...\n');
         fixable = true; % is this indeed a good trial that can be fixed.
         if fixing
             [nev_trial_new, fixable] = fix_NEV_trial_TM(nev_trial, trial_template);

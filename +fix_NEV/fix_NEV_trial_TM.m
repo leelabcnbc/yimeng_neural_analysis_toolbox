@@ -1,4 +1,4 @@
-function fix_NEV_trial_TM(NEV_trial, trial_template)
+function [ new_NEV_trial, fixable ] = fix_NEV_trial_TM(NEV_trial, trial_template)
 % FIX_NEV_TRIAL_TM ...
 %
 %   fix a (NEV or CTX) trial by Template Matching.
