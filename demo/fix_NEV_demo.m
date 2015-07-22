@@ -15,7 +15,7 @@ if nargin < 1 || isempty(fullFlag)
     fullFlag = false;
 end
 
-basePath = '/Users/yimengzh/Documents/Research/fix_NEV_data';
+basePath = '/vagrant_data'; % for Vagrant machine.
 % this varies from machine to machine.
 
 refResult1 = load('fix_NEV_demo_results/NEV_CTX_result_all_new.mat');
