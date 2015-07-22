@@ -8,7 +8,7 @@
 # windows rt, for debug
 /3rdparty/protobuf-java-2.6.1_win.jar
 /3rdparty/jre_16/rt_win.jar
-
+/3rdparty/NPMK/
 
 # protobuf classes.
 /proto_classes/**

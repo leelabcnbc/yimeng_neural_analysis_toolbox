@@ -17,4 +17,7 @@ message SingleCode {
 message RewardedTrialTemplate {
     repeated SingleCode codes = 1;
     optional string comment = 2;
+    optional int32 startcode = 3 [default = 9]; // start code for split_trial_NEV
+    optional int32 stopcode = 4 [default = 18]; // end code for split_trial_NEV
+    optional int32 rewardcode = 5 [default = 96]; // reward code for fix_NEV_file
 }

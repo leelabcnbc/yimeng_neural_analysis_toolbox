@@ -17,6 +17,7 @@ function [NEV_codes_new, NEV_times_new, rewarded_trials, NEV_codes_old, NEV_time
 % NEV_codes_old=NEV(sync_channel_idx,2);
 % NEV_times_old=NEV(sync_channel_idx,3);
 
+import fix_NEV.split_trial_NEV
 
 if nargin < 4
     throw_high_byte = true;
@@ -39,26 +40,31 @@ NEV_times_old = NEV_times_old(:);
 %     fprintf('all match!\n');
 % end
 
-%start stop codes and indices
-startcodes = 9;
-stopcodes = 18; 
+%% start, stop, reward codes for splitting and getting good trials.
+startcode = double(template.getStartcode());
+stopcode = double(template.getStopcode());
+rewardcode = double(template.getRewardcode());
 
-NEV_split = split_trial_NEV(NEV_codes_old, startcodes, stopcodes);
+
+NEV_split = split_trial_NEV(NEV_codes_old, startcode, stopcode);
+
 
 NEV_codes_new = {};
 NEV_times_new = {};
-
 rewarded_trials = [];
+
 
 
 for i = 1:length(NEV_split)
     fprintf('fixing trial %d...\n',i);
-    nev_trial = [NEV_codes_old(NEV_split{i}.start:NEV_split{i}.end) NEV_times_old(NEV_split{i}.start:NEV_split{i}.end)];
+    % fetch next trial
+    nev_trial = ... % nev_trial is a Nx2 matrix, first column code, second column time.
+        [NEV_codes_old(NEV_split{i}.start:NEV_split{i}.end), ...
+        NEV_times_old(NEV_split{i}.start:NEV_split{i}.end)];
     % it's a rewarded trial... let's use fix_NEV_trial_TM!
-    if ismember(96, nev_trial(:,1))
+    if ismember(rewardcode, nev_trial(:,1))
         fprintf('fixing a perhaps good trial...\n');
-        
-        fixable = true;
+        fixable = true; % is this indeed a good trial that can be fixed.
         if fixing
             [nev_trial_new, fixable] = fix_NEV_trial_TM(nev_trial, trial_template);
         end
@@ -66,10 +72,10 @@ for i = 1:length(NEV_split)
         if fixable
             rewarded_trials(end+1) = i;
             % put them back as cells... or I need some other formats?
-            if fixing
+            if fixing % use the fixed trials.
                 NEV_codes_new{end+1} = nev_trial_new(:,1);
                 NEV_times_new{end+1} = nev_trial_new(:,2);
-            else
+            else % just assume old trials are good enough.
                 NEV_codes_new{end+1} = nev_trial(:,1);
                 NEV_times_new{end+1} = nev_trial(:,2);
             end

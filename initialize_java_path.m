@@ -20,7 +20,7 @@ disp(baseDir);
 
 % check if your version of MATLAB ships with a protobuf...
 if any(~cellfun(@isempty,strfind(javaclasspath('-static'),'protobuf')))
-    warning('your MATLAB maybe shipped with a protobuf!');
+    warning('your MATLAB maybe shipped with a protobuf! consider running hack_javaclasspath.sh!');
 end
 
 % add protobuf library. This won't work for MATLAB that ships with
