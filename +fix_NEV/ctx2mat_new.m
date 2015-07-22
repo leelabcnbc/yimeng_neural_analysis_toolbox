@@ -6,6 +6,9 @@ function [ ctx_data ] = ctx2mat_new( file_name )
 %   Yimeng Zhang, 09/17/2013
 %   Pittsburgh, PA
 
+import fix_NEV.ce_read_cortex_index
+import fix_NEV.ce_read_cortex_record
+
 ctx_index = ce_read_cortex_index(file_name);
 
 fid = fopen(file_name); 

@@ -1,6 +1,8 @@
 function [ flag ] = is_reasonable_CTX_trial( ctx_trial )
 %IS_VALID_CTX_TRIAL Summary of this function goes here
 %   Detailed explanation goes here
+import fix_NEV.ctx_prune_criteria
+
 flag = true;
 
 prune_criteria = ctx_prune_criteria('reasonable_trial');

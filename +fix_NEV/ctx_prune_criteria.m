@@ -14,7 +14,7 @@ switch scenario
         criteria.maxEventCode = 255; % can't go bigger than this.
         criteria.maxTimestamp = 10000; 
         criteria.isTimestampSorted = true;
-    case 'rewarded_trial'
+    case 'rewarded_trial' % I think this part is never used...
         criteria.isRewardGiven = true;
         criteria.maxEventCode = 255; % can't go bigger than this.
         criteria.maxTimestamp = 10000; 

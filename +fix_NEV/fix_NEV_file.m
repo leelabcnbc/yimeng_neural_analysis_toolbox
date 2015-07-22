@@ -35,9 +35,9 @@ end
 assert(numel(NEV_codes_old)==numel(NEV_times_old));
 
 %% start, stop, reward codes for splitting and getting good trials.
-startcode = double(template.getStartcode());
-stopcode = double(template.getStopcode());
-rewardcode = double(template.getRewardcode());
+startcode = double(trial_template.getStartcode());
+stopcode = double(trial_template.getStopcode());
+rewardcode = double(trial_template.getRewardcode());
 
 %% use start/stop codes to split the whole code sequence into parts.
 NEV_split = split_trial_NEV(NEV_codes_old, startcode, stopcode);
