@@ -1,0 +1,75 @@
+comment: "trial template for cg tm file"
+codes {
+    code: 9
+}
+codes {
+    code: 10
+}
+codes {
+    code: 15
+}
+codes {
+    code: 100
+}
+codes {
+    code: 16
+}
+
+
+codes {
+    type: CODETYPE_RANGE
+    code: 192
+    code: 195
+}
+codes {
+    type: CODETYPE_RANGE
+    code: 192
+    code: 255
+    missable: true
+}
+
+
+codes {
+    code: 23
+}
+codes {
+    code: 8
+}
+codes {
+    code: 25
+}
+codes {
+    code: 26
+}
+codes {
+    code: 28
+}
+codes {
+    type: CODETYPE_RANGE
+    code: 110
+    code: 113
+}
+codes {
+    code: 120
+}
+codes {
+    code: 8
+}
+codes {
+    code: 24
+}
+codes {
+    code: 17
+}
+codes {
+    code: 128
+}
+codes {
+    code: 101
+}
+codes {
+    code: 96
+}
+codes {
+    code: 18
+}

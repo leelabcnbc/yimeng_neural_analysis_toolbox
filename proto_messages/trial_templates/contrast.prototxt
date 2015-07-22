@@ -1,0 +1,69 @@
+comment: "trial template for contrast tm file and contrast cnd file"
+codes {
+    code: 9
+}
+codes {
+    code: 10
+}
+codes {
+    code: 15
+}
+
+codes {
+    type: CODETYPE_RANGE
+    code: 140
+    code: 171
+}
+
+codes {
+    code: 100
+}
+codes {
+    code: 16
+}
+
+
+codes {
+    code: 23
+}
+codes {
+    code: 8
+}
+codes {
+    code: 33
+}
+codes {
+    code: 31
+}
+codes {
+    type: CODETYPE_RANGE
+    code: 121
+    code: 123
+}
+codes {
+    code: 120
+}
+codes {
+    code: 11
+}
+codes {
+    code: 8
+}
+codes {
+    code: 31
+}
+codes {
+    code: 24
+}
+codes {
+    code: 17
+}
+codes {
+    code: 101
+}
+codes {
+    code: 96
+}
+codes {
+    code: 18
+}
