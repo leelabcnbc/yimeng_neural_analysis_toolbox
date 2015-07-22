@@ -10,6 +10,9 @@
 /3rdparty/jre_16/rt_win.jar
 /3rdparty/NPMK/
 
+/+fix_NEV/ce_read_cortex_index.m
+/+fix_NEV/ce_read_cortex_record.m
+
 # protobuf classes.
 /proto_classes/**
 # just for creating a folder there.
