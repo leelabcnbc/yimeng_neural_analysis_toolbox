@@ -21,7 +21,8 @@ if nargin < 3 || isempty(CTX_file_list)
 end
 
 % call import_NEV_file on each NEV_file in the list, passing import_params.
-CDTTables = cellfun(@(x,y) import_NEV_file(x, import_params, y), NEV_file_list, CTX_file_list);
+CDTTables = cellfun(@(x,y) import_NEV_file(x, import_params, y), ...
+    NEV_file_list, CTX_file_list, 'UniformOutput', false);
 
 end
 
