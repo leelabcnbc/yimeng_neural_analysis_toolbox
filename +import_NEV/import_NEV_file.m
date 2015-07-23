@@ -82,11 +82,13 @@ for j = 1:numel(NEV_code)
     start_time_trial = NEV_time{j}(1);
     end_time_trial = NEV_time{j}(end);
     
+    % notice that these are all open intervals, consistent with Corentin's
+    % old program.
     selectIdx = ( (TimeStamps > start_time_trial-import_params_margin_before) ...
         & (TimeStamps < end_time_trial+import_params_margin_after) );
     
-    tmp_struct{j}.Electrode = spikeElecUnit(selectIdx);
-    tmp_struct{j}.Unit = spikeElecUnit(selectIdx);
+    tmp_struct{j}.Electrode = spikeElecUnit(selectIdx,1);
+    tmp_struct{j}.Unit = spikeElecUnit(selectIdx,2);
     tmp_struct{j}.TimeStamps = TimeStamps(selectIdx);
     tmp_struct{j}.EventCodes = NEV_code{j};
     tmp_struct{j}.EventTimes = NEV_time{j};

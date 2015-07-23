@@ -47,12 +47,13 @@ CDTTableRow = import_NEV_trial_startstoptime(CDTTableRow,trial_struct,import_par
 CDTTableRow = import_NEV_trial_trial_start_stop_time(...
     CDTTableRow,trial_struct,import_params);
 %% get spikes in this window ( [trialStartTime,trialEndTime] ).
-CDTTableRow = import_NEV_trial_getspikes(CDTTableRow,trial_struct,...
-    import_params);
+CDTTableRow = import_NEV_trial_getspikes(CDTTableRow,trial_struct);
 %% get events in this window
-CDTTableRow = import_NEV_trial_getevents(CDTTableRow,trial_struct,...
-    import_params);
+CDTTableRow = import_NEV_trial_getevents(CDTTableRow,trial_struct);
 
+% fix times.
+CDTTableRow.starttime = CDTTableRow.starttime - CDTTableRow.trialStartTime;
+CDTTableRow.endtime = CDTTableRow.endtime - CDTTableRow.trialStartTime;
 
 %% remove aux fields which users shouldn't care about.
 CDTTableRow = rmfield(CDTTableRow,{'startAlignCodes','trialStartTime',...
@@ -169,14 +170,45 @@ CDTTableRow.trialEndTime = trialEndTime + double(import_params.getMarginAfter())
 CDTTableRow.trialStartTime = trialStartTime - double(import_params.getMarginBefore());
 end
 
+function CDTTableRow = import_NEV_trial_getspikes(CDTTableRow,trial_struct)
+% first, get all spikes within the window.
 
-function CDTTableRow = import_NEV_trial_getspikes(CDTTableRow,...
-    trial_struct,import_params)
+% notice that these are all open intervals, consistent with Corentin's
+% old program.
+spikeWindowIndex = trial_struct.TimeStamps < CDTTableRow.trialEndTime & ...
+    trial_struct.TimeStamps > CDTTableRow.trialStartTime;
+
+ElectrodeWindow = trial_struct.Electrode(spikeWindowIndex);
+UnitWindow = trial_struct.Unit(spikeWindowIndex);
+TimeStampsWindow = trial_struct.TimeStamps(spikeWindowIndex);
+
+elecUnitMapLocal = unique([ElectrodeWindow, UnitWindow],'rows');
+
+numUnitLocal = size(elecUnitMapLocal,1);
+
+CDTTableRow.spikeElectrode = elecUnitMapLocal(:,1);
+CDTTableRow.spikeUnit = elecUnitMapLocal(:,2);
+CDTTableRow.spikeTimes = cell(numUnitLocal,1);
+
+for iUnit = 1:numUnitLocal % create an cell of spike times for each unit.
+    electrodeThis = elecUnitMapLocal(iUnit,1);
+    unitThis = elecUnitMapLocal(iUnit,2);
+    spikeIndexThisUnit = ...
+        (ElectrodeWindow==electrodeThis) & (UnitWindow==unitThis);
+    CDTTableRow.spikeTimes{iUnit} = ... % now time origin corrected.
+        TimeStampsWindow(spikeIndexThisUnit) - CDTTableRow.trialStartTime;
+end
 
 end
 
-function CDTTableRow = import_NEV_trial_getevents(CDTTableRow,...
-    trial_struct,import_params)
+function CDTTableRow = import_NEV_trial_getevents(CDTTableRow,trial_struct)
+% notice that these are all open intervals, consistent with Corentin's
+% old program.
+eventWindowIndex = trial_struct.EventTimes < CDTTableRow.trialEndTime & ...
+    trial_struct.EventTimes > CDTTableRow.trialStartTime;
+CDTTableRow.eventCodes = trial_struct.EventCodes(eventWindowIndex);
+CDTTableRow.eventTimes = ...
+    trial_struct.EventTimes(eventWindowIndex) - CDTTableRow.trialStartTime;
 
 end
 
