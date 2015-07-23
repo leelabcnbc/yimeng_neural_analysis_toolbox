@@ -12,7 +12,7 @@ function fix_NEV_demo(fullFlag)
 %% FILENAME  : fix_NEV_demo.m
 
 if nargin < 1 || isempty(fullFlag)
-    fullFlag = false;
+    fullFlag = false; % use full to get a more complete test. takes longer.
 end
 
 basePath = '/vagrant_data'; % for Vagrant machine.
@@ -21,7 +21,7 @@ basePath = '/vagrant_data'; % for Vagrant machine.
 refResult1 = load('fix_NEV_demo_results/NEV_CTX_result_all_new.mat');
 refResult2 = load('fix_NEV_demo_results/NEV_CTX_result_all_add_new.mat');
 
-addpath(fullfile(root_dir(),'proto_functions'));
+%addpath(fullfile(root_dir(),'proto_functions'));
 addpath(fullfile(root_dir(),'util'));
 
 
@@ -63,7 +63,7 @@ fprintf('for set 2, code difference: %f, time difference: %f\n',...
 assert(codeDiff == 0);
 assert(timeDiff < 1e-3);
 
-rmpath(fullfile(root_dir(),'proto_functions'));
+%rmpath(fullfile(root_dir(),'proto_functions'));
 rmpath(fullfile(root_dir(),'util'));
 
 end
@@ -82,7 +82,7 @@ trueArray = repmat({true},length(info_set),1);
 for i = 1:length(info_set)
     assert(exist(info_set{i}{1},'file')==2);
     fprintf('fixing file %d\n', i);
-    trial_template_this = parse_proto_txt(...
+    trial_template_this = proto_functions.parse_proto_txt(...
         fullfile(root_dir(),'proto_messages','trial_templates',...
         tm_cnd_pair_to_prototxt(info_set{i}{2}, info_set{i}{3}) ));
     templateArray{i} = trial_template_this;

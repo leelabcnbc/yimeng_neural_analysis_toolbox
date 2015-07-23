@@ -6,31 +6,33 @@ option java_outer_classname = "ImportParamsProtos";
 message ImportParams {
     optional string comment = 1;
 
-    enum EndAlignType { // how to know where to end after a start align code.
-        ENDALIGNTYPE_CODE = 0;
-        ENDALIGNTYPE_TIME = 1;
+    enum AlignType { // how to know where to end after a start align code.
+        ALIGNTYPE_CODE = 0;
+        ALIGNTYPE_TIME = 1;
     }
-    
     // start_align_codes and end_align_codes should have the same length.
     // However, for Jason's wierd timing file, maybe we should add
     // a toggle to allow another strategy, since there's no end code...
     // they should come in pairs, each pair in same location specify a pair.
     // they are useful for extracting sub trials from each trial.
+    // these subtrial stuff only serve as time markers, and for historical
+    // reasons, markers come in pairs...
     repeated int32 subtrial_start_codes = 2;
     repeated int32 subtrial_end_codes = 3; // either use codes to determine end
     repeated double subtrial_end_times = 8; // or use times to determine.
-
-    
-    optional EndAlignType subtrial_end_type = 10 [default = ENDALIGNTYPE_CODE]; //use code to end subtrial windows.
+    optional AlignType subtrial_end_type = 10 [default = ALIGNTYPE_CODE]; //use code to end subtrial windows.
 
     // these start/end code/time are for the whole trial.
     optional int32 trial_start_code = 6; // by default, this is the first of start_align_codes
     optional int32 trial_end_code = 7; // by default, this is the last of end_align_codes
     optional double trial_end_time = 9; // by default, this is the time of last start_align_code plus last of end_align_times.
-    optional EndAlignType trial_end_type = 11 [default = ENDALIGNTYPE_CODE]; //use code to end the window for whole trial.
+    optional AlignType trial_end_type = 11 [default = ALIGNTYPE_CODE]; //use code to end the window for whole trial.
+    // if any of trial_end_code or trial_end_time is set, then follow trial_end_type to determine which to use;
+    // otherwise, use subtrial_end_codes(end) or subtrial_start_codes(end)+subtrial_end_times(end), depending on 
+    // subtrial_end_type.
 
-    optional double margin_before = 15 [default = 0.3]; // margin before trial_start_code
-    optional double margin_after = 16 [default = 0.3]; // margin after trial_end_code/trial_end_time
+    optional double margin_before = 15 [default = 0.3]; // margin (in second) before trial_start_code
+    optional double margin_after = 16 [default = 0.3]; // margin (in second) after trial_end_code/trial_end_time
 
     optional string template_prototxt = 4; // file name of prototxt for rewarded trials.
     // my current plan is, if this field doesn't contain filesep, ('/'), then assume it under that template folder.

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+rm -rf ../proto_classes/*
 protoc --java_out=../proto_classes rewarded_trial_template.proto
 protoc --java_out=../proto_classes import_params.proto
 # then compile Java class files.
