@@ -53,7 +53,7 @@ CDTTableRow = import_NEV_trial_getevents(CDTTableRow,trial_struct);
 
 % fix times.
 CDTTableRow.starttime = CDTTableRow.starttime - CDTTableRow.trialStartTime;
-CDTTableRow.endtime = CDTTableRow.endtime - CDTTableRow.trialStartTime;
+CDTTableRow.stoptime = CDTTableRow.stoptime - CDTTableRow.trialStartTime;
 
 %% remove aux fields which users shouldn't care about.
 CDTTableRow = rmfield(CDTTableRow,{'startAlignCodes','trialStartTime',...
@@ -85,7 +85,7 @@ CDTTableRow.starttime = findEventTimesGivenCodes(...
     startAlignCodes,trial_struct.EventCodes,trial_struct.EventTimes);
 
 % then, work on end time.
-CDTTableRow.endtime = nan(numPairMarker,1);
+CDTTableRow.stoptime = nan(numPairMarker,1);
 % figure out which scheme is used for end time.
 className = 'com.leelab.monkey_exp.ImportParamsProtos$ImportParams$AlignType';
 typeObjCode = javaMethod('valueOf', className, 'ALIGNTYPE_CODE');
@@ -100,14 +100,14 @@ if typeObjCode.equals(import_params.getSubtrialEndType())
             double(import_params.getSubtrialEndCodes(iAlignCode-1));
     end
     
-    CDTTableRow.endtime = findEventTimesGivenCodes(...
+    CDTTableRow.stoptime = findEventTimesGivenCodes(...
         endAlignCodes,trial_struct.EventCodes,trial_struct.EventTimes);
 elseif typeObjTime.equals(import_params.getSubtrialEndType())
     assert(numPairMarker==double(import_params.getSubtrialEndTimesCount()));
     
     % simply add time.
     for iAlignCode = 1:numPairMarker
-        CDTTableRow.endtime(iAlignCode) = ...
+        CDTTableRow.stoptime(iAlignCode) = ...
             CDTTableRow.starttime(iAlignCode) + ...
             double(import_params.getSubtrialEndTimes(iAlignCode-1));
     end
@@ -117,7 +117,7 @@ end
 
 % check numbers match.
 assert(numel(CDTTableRow.starttime)==numPairMarker);
-assert(numel(CDTTableRow.endtime)==numPairMarker);
+assert(numel(CDTTableRow.stoptime)==numPairMarker);
 
 % save codes for easier access.
 CDTTableRow.startAlignCodes = startAlignCodes;
@@ -159,7 +159,7 @@ if import_params.hasTrialEndCode() || import_params.hasTrialEndTime()
         error('not implemented!');
     end
 else
-    trialEndTime = CDTTableRow.endtime(end);
+    trialEndTime = CDTTableRow.stoptime(end);
 end
 
 % these are the final products of this block.

@@ -98,6 +98,32 @@ CDTTableByTrials = cellfun(@(x) import_NEV_trial(x, import_params), ...
     tmp_struct, 'UniformOutput', false);
 
 %% create a cell array for each column in the whole table.
+CDTTable = struct();
+numTrial = numel(NEV_code);
+CDTTable.condition = zeros(numTrial,1);
+CDTTable.starttime = cell(numTrial,1); % later to be represented as matrix.
+CDTTable.stoptime = cell(numTrial,1); % later to be represented as matrix.
+CDTTable.spikeElectrode = cell(numTrial,1);
+CDTTable.spikeUnit = cell(numTrial,1);
+CDTTable.spikeTimes = cell(numTrial,1);
+CDTTable.eventCodes = cell(numTrial,1);
+CDTTable.eventTimes = cell(numTrial,1);
+
+
+for iTrial = 1:numTrial
+    CDTTableThisRow = CDTTableByTrials{iTrial};
+    CDTTable.condition(iTrial) = CDTTableThisRow.condition;
+    CDTTable.starttime{iTrial} = CDTTableThisRow.starttime(:)'; % make them row
+    CDTTable.stoptime{iTrial} = CDTTableThisRow.stoptime(:)'; % make them row.
+    CDTTable.spikeElectrode{iTrial} = CDTTableThisRow.spikeElectrode;
+    CDTTable.spikeUnit{iTrial} = CDTTableThisRow.spikeUnit;
+    CDTTable.spikeTimes{iTrial} = CDTTableThisRow.spikeTimes;
+    CDTTable.eventCodes{iTrial} = CDTTableThisRow.eventCodes;
+    CDTTable.eventTimes{iTrial} = CDTTableThisRow.eventTimes;
+end
+
+CDTTable.starttime = cell2mat(CDTTable.starttime);
+CDTTable.stoptime = cell2mat(CDTTable.stoptime);
 
 end
 

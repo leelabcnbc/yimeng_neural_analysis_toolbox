@@ -1,0 +1,9 @@
+comment: "params for experiment edge_test, in Corentin\'s data"
+subtrial_start_codes: 25
+subtrial_start_codes: 27
+subtrial_start_codes: 29
+subtrial_end_codes: 26
+subtrial_end_codes: 28
+subtrial_end_codes: 30
+template_prototxt: "3ec_edge_or.prototxt"
+trial_to_condition_func: "(NEV_code) (NEV_code(6)-192)*64+(NEV_code(7)-192)+1"

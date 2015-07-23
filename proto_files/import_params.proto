@@ -24,11 +24,11 @@ message ImportParams {
 
     // these start/end code/time are for the whole trial.
     optional int32 trial_start_code = 6; // if empty, parser will work as if this is the first of start_align_codes
-    optional int32 trial_end_code = 7; 
+    optional int32 trial_end_code = 7;
     optional double trial_end_time = 9; // time after trial_start_code.
     optional AlignType trial_end_type = 11 [default = ALIGNTYPE_CODE]; //use code to end the window for whole trial.
     // if any of trial_end_code or trial_end_time is set, then follow trial_end_type to determine which to use;
-    // otherwise, use subtrial_end_codes(end) or subtrial_start_codes(end)+subtrial_end_times(end), depending on 
+    // otherwise, use subtrial_end_codes(end) or subtrial_start_codes(end)+subtrial_end_times(end), depending on
     // subtrial_end_type.
 
     optional double margin_before = 15 [default = 0.3]; // margin (in second) before trial_start_code
@@ -43,6 +43,6 @@ message ImportParams {
     optional bool spike_no_255_unit = 13 [default = true]; // no unit 255 (noise)
     optional bool spike_no_0_unit = 14 [default = false]; // no unit 0 (unclassfied)
 
-    optional bool fix_nev_throw_high_byte = 17 [default = true];
+    optional bool fix_nev_throw_high_byte = 17 [default = true]; // unless someday we have high bytes based trial, it's always good to use true.
     optional bool fix_nev = 18 [default = true]; // if this is true, you must define the codes part of RewardedTrialTemplate
 }
