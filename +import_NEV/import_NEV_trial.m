@@ -44,14 +44,19 @@ CDTTableRow.condition = trial_to_condition_func(trial_struct.EventCodes);
 %% get CDTTableRow.starttime/stoptime
 CDTTableRow = import_NEV_trial_startstoptime(CDTTableRow,trial_struct,import_params);
 %% work on getting the window for extracting spikes and events.
-[trialStartTime, trialEndTime] = import_NEV_trial_trial_start_stop_time(...
+CDTTableRow = import_NEV_trial_trial_start_stop_time(...
     CDTTableRow,trial_struct,import_params);
 %% get spikes in this window ( [trialStartTime,trialEndTime] ).
 CDTTableRow = import_NEV_trial_getspikes(CDTTableRow,trial_struct,...
-    import_params,trialStartTime,trialEndTime);
+    import_params);
 %% get events in this window
 CDTTableRow = import_NEV_trial_getevents(CDTTableRow,trial_struct,...
-    import_params,trialStartTime,trialEndTime);
+    import_params);
+
+
+%% remove aux fields which users shouldn't care about.
+CDTTableRow = rmfield(CDTTableRow,{'startAlignCodes','trialStartTime',...
+    'trialEndTime'});
 
 end
 
@@ -112,24 +117,32 @@ end
 % check numbers match.
 assert(numel(CDTTableRow.starttime)==numPairMarker);
 assert(numel(CDTTableRow.endtime)==numPairMarker);
+
+% save codes for easier access.
+CDTTableRow.startAlignCodes = startAlignCodes;
+
 end
 
 
-function [trialStartTime, trialEndTime] = ...
-    import_NEV_trial_trial_start_stop_time(...
-    CDTTableRow,trial_struct,import_params)
+function CDTTableRow = ...
+    import_NEV_trial_trial_start_stop_time(CDTTableRow,...
+    trial_struct,import_params)
 % the window is defined by trialStartTime and trialEndTime.
 % work on trial level start code.
 if import_params.hasTrialStartCode()
     trialStartAlignCode = double(import_params.getTrialStartCode());
 else
-    trialStartAlignCode = startAlignCodes(1); % otherwise use first start code in subtrial level.
+    trialStartAlignCode = CDTTableRow.startAlignCodes(1); % otherwise use first start code in subtrial level.
 end
 trialStartTime = findEventTimesGivenCodes(...
     trialStartAlignCode,trial_struct.EventCodes,trial_struct.EventTimes);
 % work on end time.
 % an if-else struct following the comment in proto definition.
 % this block gives the unpadded trial end time.
+className = 'com.leelab.monkey_exp.ImportParamsProtos$ImportParams$AlignType';
+typeObjCode = javaMethod('valueOf', className, 'ALIGNTYPE_CODE');
+typeObjTime = javaMethod('valueOf', className, 'ALIGNTYPE_TIME');
+
 if import_params.hasTrialEndCode() || import_params.hasTrialEndTime()
     % switch over trial_end_type
     if typeObjCode.equals(import_params.getTrialEndType()) % code based
@@ -150,12 +163,22 @@ end
 
 % these are the final products of this block.
 % pad margin
-trialEndTime = trialEndTime + double(import_params.getMarginAfter());
+CDTTableRow.trialEndTime = trialEndTime + double(import_params.getMarginAfter());
 % pad margin. This can't be done before, since otherwise the end time will
 % be wrong...
-trialStartTime = trialStartTime - double(import_params.getMarginBefore());
+CDTTableRow.trialStartTime = trialStartTime - double(import_params.getMarginBefore());
 end
 
+
+function CDTTableRow = import_NEV_trial_getspikes(CDTTableRow,...
+    trial_struct,import_params)
+
+end
+
+function CDTTableRow = import_NEV_trial_getevents(CDTTableRow,...
+    trial_struct,import_params)
+
+end
 
 % Created with NEWFCN.m by Frank González-Morphy
 % Contact...: frank.gonzalez-morphy@mathworks.de
