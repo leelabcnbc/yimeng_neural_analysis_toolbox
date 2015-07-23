@@ -29,9 +29,9 @@ trial_template = proto_functions.parse_proto_txt(template_prototxt);
 
 %% get trials. (sorry for double reading, since fix_NEV began as a separate package).
 [NEV_code, NEV_time]=...
-    fix_NEV_CTX(NEV_name, logical(import_params.getFixNev()), ...
+    fix_NEV_CTX(NEV_name, import_params.getFixNev(), ...
     trial_template, CTX_name, ...
-    logical(import_params.getFixNevThrowHighByte()));
+    import_params.getFixNevThrowHighByte());
 
 %% load NEV
 addpath(genpath(NPMK_dir()));
@@ -44,15 +44,15 @@ spikeElecUnit = [NEV_struct.Data.Spikes.Electrode(:), ...
     NEV_struct.Data.Spikes.Unit(:)];
 spikePruneIdx = false(numel(NEV_struct.Data.Spikes.Electrode),1);
 
-if logical(import_params.getSpikeNoSecondaryUnit())
+if import_params.getSpikeNoSecondaryUnit()
     spikePruneIdx( (spikeElecUnit(:,2)>1) & (spikeElecUnit(:,2)<255) ) = true;
 end
 
-if logical(import_params.getSpikeNo255Unit())
+if import_params.getSpikeNo255Unit()
     spikePruneIdx(spikeElecUnit(:,2)==255) = true;
 end
 
-if logical(import_params.getSpikeNo0Unit())
+if import_params.getSpikeNo0Unit()
     spikePruneIdx(spikeElecUnit(:,2)==0) = true;
 end 
 spikeElecUnit = spikeElecUnit(~spikePruneIdx,:); % keep non pruned spikes.

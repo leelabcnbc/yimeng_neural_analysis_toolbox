@@ -23,9 +23,9 @@ message ImportParams {
     optional AlignType subtrial_end_type = 10 [default = ALIGNTYPE_CODE]; //use code to end subtrial windows.
 
     // these start/end code/time are for the whole trial.
-    optional int32 trial_start_code = 6; // by default, this is the first of start_align_codes
-    optional int32 trial_end_code = 7; // by default, this is the last of end_align_codes
-    optional double trial_end_time = 9; // by default, this is the time of last start_align_code plus last of end_align_times.
+    optional int32 trial_start_code = 6; // if empty, parser will work as if this is the first of start_align_codes
+    optional int32 trial_end_code = 7; 
+    optional double trial_end_time = 9; // time after trial_start_code.
     optional AlignType trial_end_type = 11 [default = ALIGNTYPE_CODE]; //use code to end the window for whole trial.
     // if any of trial_end_code or trial_end_time is set, then follow trial_end_type to determine which to use;
     // otherwise, use subtrial_end_codes(end) or subtrial_start_codes(end)+subtrial_end_times(end), depending on 
