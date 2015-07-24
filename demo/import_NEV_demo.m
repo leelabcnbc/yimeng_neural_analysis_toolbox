@@ -14,20 +14,18 @@ function import_NEV_demo()
 import import_NEV.import_params_dir
 import import_NEV.import_NEV_files
 % load file list.
-basePathNEV = '/Users/yimengzh/Desktop/yimeng_box_old/zym1010/demo_nev_data';
-basePathCTX = '/Users/yimengzh/Desktop/yimeng_box_old/zym1010/demo_ctx_data';
+basePathNEV = fullfile(root_dir(),'demo','fix_NEV_demo_data');
+basePathCTX = fullfile(root_dir(),'demo','fix_NEV_demo_data');
 
 NEV_list = {
     'v1_2012_1105_003.nev';
     'v1_2012_1105_004.nev';
-    'v1_2012_1105_005.nev';
-    'v1_2012_1106_003.nev'};
+    };
 
 CTX_list = {
     'GA110512.3';
     'GA110512.4';
-    'GA110512.5';
-    'GA110612.3'};
+    };
 
 assert(numel(NEV_list)==numel(CTX_list));
 
@@ -36,19 +34,113 @@ for iNEV = 1:numel(NEV_list)
     CTX_list{iNEV} = fullfile(basePathCTX,CTX_list{iNEV});
 end
 
-
 % load in experiment package.
 protoClass = 'com.leelab.monkey_exp.ImportParamsProtos$ImportParams';
 importParamsPrototxt = fullfile(import_params_dir(),'edge_test.prototxt');
 importParams = proto_functions.parse_proto_txt(importParamsPrototxt,protoClass);
 
-import_NEV_files(NEV_list(1:2),importParams,CTX_list(1:2));
+CDTTables = import_NEV_files(NEV_list,importParams,CTX_list);
+
+
+referenceResultDir = fullfile(root_dir(),'demo','import_NEV_demo_results');
+referenceResultFileList = {...
+    'v1_2012_1105_003.mat';
+    'v1_2012_1105_004.mat';
+    };
+
+assert(numel(referenceResultFileList)==numel(CDTTables));
+
+for iFile = 1:numel(CDTTables)
+    oldMatThis = ...
+        load(fullfile(referenceResultDir,referenceResultFileList{iFile}));
+    % compare oldMatThis.cdt and CDTTables{iFile}.
+    cdtOld = oldMatThis.cdt;
+    cdtNew = CDTTables{iFile};
+    compare_old_and_new_CDT(cdtOld,cdtNew);
+end
+
 
 % just use vertcat (check my evernote note) to combine!
+
+% TODO: save binary and text version of importParams.
 
 end
 
 
+
+function compare_old_and_new_CDT(cdtOld,cdtNew)
+
+tol = 1e-10;
+% make sure cnd index and cnd itself are exchangeable.
+assert(isequal(cdtOld.exp_param.condition_list(:)', ...
+    1:numel(cdtOld.exp_param.condition_list)));
+
+%% check trial orders by conditions.
+assert(isequal(cdtOld.order(:,1),cdtNew.condition));
+
+%% check events,spikes,times.
+trialCount = cdtOld.trial_count;
+conditionTotal = size(cdtOld.event,1);
+
+for iCondition = 1:conditionTotal
+    
+    %% events.
+    eventCodesNew = cdtNew.eventCodes(cdtNew.condition==iCondition);
+    eventTimesNew = cdtNew.eventTimes(cdtNew.condition==iCondition);
+    
+    assert(numel(eventCodesNew)==trialCount(iCondition));
+    assert(numel(eventTimesNew)==trialCount(iCondition));
+    
+    for iTrial = 1:trialCount(iCondition)
+        eventThisOld = cdtOld.event{iCondition,iTrial};
+        eventThisNew = [eventCodesNew{iTrial},eventTimesNew{iTrial}];
+        assert(max(abs(eventThisOld(:)-eventThisNew(:)))<tol); % in case there's some round off errors on event times.
+    end
+    
+    %% spikes
+    spikeElecNew = cdtNew.spikeElectrode(cdtNew.condition==iCondition);
+    spikeUnitNew = cdtNew.spikeUnit(cdtNew.condition==iCondition);
+    spikeTimesNew = cdtNew.spikeTimes(cdtNew.condition==iCondition);
+    
+    
+    
+    for iTrial = 1:trialCount(iCondition)
+        spikeElecNewThis = spikeElecNew{iTrial};
+        spikeUnitNewThis = spikeUnitNew{iTrial};
+        spikeTimesNewThis = spikeTimesNew{iTrial};
+        
+        spikeTimesOldThis = cdtOld.spike(:,iCondition,iTrial);
+        
+        % go over by maps.
+        for iUnit = 1:size(cdtOld.map,1)
+            spikeTimesThisUnitNew = spikeTimesNewThis(...
+                spikeElecNewThis==cdtOld.map(iUnit,1) & spikeUnitNewThis==cdtOld.map(iUnit,2));
+            if isempty(spikeTimesThisUnitNew)
+                assert(isempty(spikeTimesOldThis{iUnit}));
+            else
+                assert(numel(spikeTimesThisUnitNew)==1);
+                assert(max(abs(spikeTimesOldThis{iUnit}(:)-spikeTimesThisUnitNew{1}(:)))<tol);
+            end
+        end
+    end
+    
+    
+    %% times.
+    starttimeNew = cdtNew.starttime(cdtNew.condition==iCondition,:);
+    stoptimeNew = cdtNew.stoptime(cdtNew.condition==iCondition,:);
+    
+    for iTrial = 1:trialCount(iCondition)
+        starttimeThisOld = cdtOld.time.start_time{iCondition,iTrial};
+        stoptimeThisOld = cdtOld.time.stop_time{iCondition,iTrial};
+        starttimeThisNew = starttimeNew(iTrial,:);
+        stoptimeThisNew = stoptimeNew(iTrial,:);
+        assert(max(abs(starttimeThisOld(:)-starttimeThisNew(:)))<tol);
+        assert(max(abs(stoptimeThisOld(:)-stoptimeThisNew(:)))<tol);
+    end
+
+end
+
+end
 
 
 
