@@ -197,6 +197,9 @@ for iUnit = 1:numUnitLocal % create an cell of spike times for each unit.
         (ElectrodeWindow==electrodeThis) & (UnitWindow==unitThis);
     CDTTableRow.spikeTimes{iUnit} = ... % now time origin corrected.
         TimeStampsWindow(spikeIndexThisUnit) - CDTTableRow.trialStartTime;
+    CDTTableRow.spikeTimes{iUnit} = CDTTableRow.spikeTimes{iUnit}(:)'; 
+    % make spike times row vector for better compatibility with other
+    % tools which accept row vectors.
 end
 
 end
