@@ -13,7 +13,9 @@ function import_NEV_demo()
 
 import import_NEV.import_params_dir
 import import_NEV.import_NEV_files
-% load file list.
+
+
+%% load file list.
 basePathNEV = fullfile(root_dir(),'demo','import_NEV_demo_data');
 basePathCTX = fullfile(root_dir(),'demo','import_NEV_demo_data');
 
@@ -34,14 +36,15 @@ for iNEV = 1:numel(NEV_list)
     CTX_list{iNEV} = fullfile(basePathCTX,CTX_list{iNEV});
 end
 
-% load in experiment package.
+%% load in import parameters.
 protoClass = 'com.leelab.monkey_exp.ImportParamsProtos$ImportParams';
 importParamsPrototxt = fullfile(import_params_dir(),'edge_test.prototxt');
 importParams = proto_functions.parse_proto_txt(importParamsPrototxt,protoClass);
 
+%% do the actual conversion.
 CDTTables = import_NEV_files(NEV_list,importParams,CTX_list);
 
-
+%% compare results
 referenceResultDir = fullfile(root_dir(),'demo','import_NEV_demo_results');
 referenceResultFileList = {...
     'v1_2012_1105_003.mat';
@@ -63,6 +66,18 @@ end
 % just use vertcat (check my evernote note) to combine!
 
 % TODO: save binary and text version of importParams.
+
+%% save the result.
+saveDir = referenceResultDir;
+saveFileName = 'import_NEV_demo_result'; % no extension, which will be appended automatically.
+% a custom meta field. set metaInfo = [] or just don't pass it into
+% save_CDTTable if you don't need it.
+metaInfo = struct();
+metaInfo.NEV_list = NEV_list;
+metaInfo.CTX_list = CTX_list;
+metaInfo.timestamp = datestr(now,30);
+
+save_CDTTable(fullfile(saveDir,saveFileName),CDTTables,importParams,metaInfo);
 
 end
 
@@ -144,7 +159,20 @@ end
 
 
 
+function save_CDTTable(savePath, CDTTables, importParams,metaInfo)
+% demo function to save result. maybe it's good to change it into a
+% standalone function.
 
+if nargin < 4 || isempty(metaInfo)
+    metaInfo = [];
+end
+
+save([savePath '.mat'],'CDTTables','savePath','metaInfo');
+proto_functions.write_proto_bin(importParams,[savePath '.protobin']);
+proto_functions.write_proto_txt(importParams,[savePath '.prototxt']);
+
+
+end
 
 
 
