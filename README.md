@@ -31,9 +31,10 @@ For each CDT table row, it has the following columns (fields) for the correspond
 * `stoptime`: the time of "stop markers" in the trial, in 1 x K vector.
 * `spikeElectrode`: a Mx1 vector saving the electrode number of all M neurons firing during this trial.
 * `spikeUnit`: a Mx1 vector saving the unit number (on corresponding electrodes) of all M neurons firing during this trial.
-* `spikeTimes`: a Mx1 cell array with each cell being a vector saving the spike time of that neuron for this trial.
+* `spikeTimes`: a Mx1 cell array with each cell being a row vector saving the spike time of that neuron for this trial.
 * `eventCodes`: a column vector saving all event codes in this trial.
 * `eventTimes`: a column vector saving all event times in this trial.
 
 ### Example of CDT table vs. CDT
 
+Consider a NEV file with 32 channels, 40 conditions, and 10 trials per condition. For a CDT table structure, there will be 40x10=400 rows, each row having all info about that trial. For a CDT structure, There's a 32 x 40 x 10 (numChannel x numCondition x numTrial) `EVENTS` cell array, where each cell saves a row vector of the spike time of that channel on that trial of that condition. Similarly, for `starttime` (`stoptime`) in CDT table, there's a 40 x 10 `data.starttime` cell array. The disadvantages of CDT are 1) it's difficult to remember the meanings of all dimensions in that 3D `EVENTS` array or that 2D `data.starttime` array; 2) sometimes, we don't have same number of trials for each condition, so some elements in 3D or 2D arrays of CDT structure are not meaningful. Essentially, the nature of neural data is trial based, rather than a high dimensional array. In CDT table structure, since all fields are named, we don't have to remember the meanings of dimensions, and we don't have to fill in empty cells for unequal number of conditions.
