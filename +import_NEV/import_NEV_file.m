@@ -25,7 +25,8 @@ if isempty(strfind(template_prototxt,filesep)) % append the path with default di
     template_prototxt = fullfile(trial_template_dir(),template_prototxt);
 end
 
-trial_template = proto_functions.parse_proto_txt(template_prototxt);
+trial_template = proto_functions.parse_proto_txt(template_prototxt,...
+    'com.leelab.monkey_exp.RewardedTrialTemplateProtos$RewardedTrialTemplate');
 
 %% get trials. (sorry for double reading, since fix_NEV began as a separate package).
 [NEV_code, NEV_time]=...

@@ -13,10 +13,10 @@ function result = parse_proto_txt(fileName, protoClass)
 
 % now, it's only responsible for decoding the trial template.
 
-if nargin < 2 || isempty(protoClass)
-    protoClass = ...
-        'com.leelab.monkey_exp.RewardedTrialTemplateProtos$RewardedTrialTemplate';
-end
+% if nargin < 2 || isempty(protoClass)
+%     protoClass = ...
+%         'com.leelab.monkey_exp.RewardedTrialTemplateProtos$RewardedTrialTemplate';
+% end
 
 builder = javaMethod('newBuilder',protoClass);
 
