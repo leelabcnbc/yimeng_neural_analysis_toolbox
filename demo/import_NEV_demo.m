@@ -14,8 +14,8 @@ function import_NEV_demo()
 import import_NEV.import_params_dir
 import import_NEV.import_NEV_files
 % load file list.
-basePathNEV = fullfile(root_dir(),'demo','fix_NEV_demo_data');
-basePathCTX = fullfile(root_dir(),'demo','fix_NEV_demo_data');
+basePathNEV = fullfile(root_dir(),'demo','import_NEV_demo_data');
+basePathCTX = fullfile(root_dir(),'demo','import_NEV_demo_data');
 
 NEV_list = {
     'v1_2012_1105_003.nev';
