@@ -3,7 +3,7 @@ yimeng_neural_analysis_toolbox
 
 
 ## Introduction
-A package mainly for importing NEV/CTX data into MATLAB.
+A package for analzying (now mainly for importing) NEV/CTX data, mostly written in MATLAB.
 
 ## Motivation
 
