@@ -11,7 +11,7 @@ message SingleCode {
     }
     optional CodeType type = 3 [default = CODETYPE_SINGLE]; // type of single code. by default, use single.
     repeated int32 code = 1; // a set of codes. for CODETYPE_SINGLE, there should be one number; for CODETYPE_RANGE, should be two; for CODETYPE_SET, at least one.
-    optional bool missable = 2 [default = false]; // can this code be missing in the event codes.
+    optional bool missable = 2 [default = false]; // can this code be missing in the event codes. This is only used for the 2nd code for two adjacent codes with same value.
 }
 
 message RewardedTrialTemplate {

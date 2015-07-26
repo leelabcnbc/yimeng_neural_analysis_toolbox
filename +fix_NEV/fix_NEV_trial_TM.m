@@ -42,7 +42,8 @@ className = 'com.leelab.monkey_exp.RewardedTrialTemplateProtos$SingleCode$CodeTy
 typeObjSingle = javaMethod('valueOf', className, 'CODETYPE_SINGLE');
 typeObjRange = javaMethod('valueOf', className, 'CODETYPE_RANGE');
 %% switch over types.
-if logical(typeObjSingle.equals(template_part.getType()))
+if typeObjSingle.equals(template_part.getType())
+    assert(~template_part.getMissable()); % can't miss...
     valid_index = find(NEV_trial(:,1)==template_part.getCode(0));
     valid_index = valid_index(valid_index >= next_idx_in_old_trial);
     if (isempty(valid_index))
@@ -52,8 +53,7 @@ if logical(typeObjSingle.equals(template_part.getType()))
     new_trial_part = NEV_trial(valid_index(1),:);
     next_idx_in_old_trial = valid_index(1)+1;
     % the missing feature is not implemented yet...
-else
-    assert(typeObjRange.equals(template_part.getType()));
+elseif typeObjRange.equals(template_part.getType())
     % we assume that a spurious code will not occur between two condition codes.
     % basically this is only trying to handle the two byte encoding
     % scheme of condition numbers.
@@ -62,7 +62,7 @@ else
     valid_index = find((NEV_trial(:,1)>=min_value) & (NEV_trial(:,1)<=max_value));
     valid_index = valid_index(valid_index >= next_idx_in_old_trial);
     
-    if ~logical(template_part.getMissable()) % not missable
+    if ~template_part.getMissable() % not missable
         if (isempty(valid_index))
             fixable = false;
             return;
@@ -82,6 +82,8 @@ else
             next_idx_in_old_trial = valid_index(1)+1;
         end
     end
+else
+    error('not implemented!');
 end
 
 end
