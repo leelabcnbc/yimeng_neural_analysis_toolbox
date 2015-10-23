@@ -15,8 +15,9 @@ if nargin < 1 || isempty(fullFlag)
     fullFlag = false; % use full to get a more complete test. takes longer.
 end
 
-basePath = '/vagrant_data'; % for Vagrant machine.
-% this varies from machine to machine.
+% basePath = '/vagrant_data'; % for Vagrant machine.
+% % this varies from machine to machine.
+basePath = fullfile(root_dir(),'demo','fix_NEV_demo_data');
 
 refResult1 = load('fix_NEV_demo_results/NEV_CTX_result_all_new.mat');
 refResult2 = load('fix_NEV_demo_results/NEV_CTX_result_all_add_new.mat');
@@ -38,7 +39,7 @@ if fullFlag
     codeDiff = max(abs(codes_flat_new(:)-codes_flat_old(:)));
     timeDiff = max(abs(times_flat_new(:)-times_flat_old(:))); % I don't use isequal because I guess some roundoffs in time computation can be there.
     
-    fprintf('for set 2, code difference: %f, time difference: %f\n',...
+    fprintf('for set 1, code difference: %f, time difference: %f\n',...
         codeDiff,timeDiff);
     assert(codeDiff == 0);
     assert(timeDiff < 1e-3);
